@@ -13,11 +13,33 @@
 <meta name="description" content="Estética avançada em Itabira/MG com Larissa Martins, fisioterapeuta pós-graduada em dermatofuncional. Harmonização facial, botox, bioestimulador de colágeno, tratamentos corporais e spa day. Rua Demerval Camilo de Oliveira Lage, 130 — Vila São Joaquim.">
 <meta name="theme-color" content="#FBF6F3">
 
+<!-- ⚠️ O CANONICAL APONTA PRO GITHUB PAGES, E ISSO E DE PROPOSITO. O site vive
+     em dois enderecos: o do Pages, que e de graca e e o oficial, e o do
+     Netlify, que e a vitrine bonita pra mandar pro cliente. Sem canonical, o
+     Google veria duas copias identicas e escolheria uma sozinho. Com ele, o
+     Netlify pode existir a vontade sem competir com o endereco oficial.
+     ⚠️ QUANDO ELA TIVER DOMINIO PROPRIO, o canonical e o og:image passam a
+     apontar pra la, e nao pra ca. -->
+<link rel="canonical" href="https://marcel0gs.github.io/larissa-martins-estetica/">
+
 <meta property="og:type" content="website">
 <meta property="og:title" content="Larissa Martins Estética Avançada — Itabira/MG">
 <meta property="og:description" content="Harmonização que realça, não que exagera. Fisioterapeuta pós-graduada em dermatofuncional, em Itabira/MG.">
-<meta property="og:image" content="assets/img/logo-coral.webp">
+<!-- ⚠️ ESTA IMAGEM E JPEG E COM URL ABSOLUTA, e as duas coisas sao o conserto
+     de um defeito real: antes aqui havia `assets/img/logo-coral.webp`, e nesse
+     formato o cartao de link do WhatsApp saia SEM IMAGEM NENHUMA. Dois motivos
+     somados — caminho relativo, que o robo do WhatsApp nao resolve, e webp, que
+     ele nao renderiza no cartao. Como o site e a vitrine comercial e o link
+     chega por WhatsApp, cartao sem imagem e prejuizo direto.
+     A imagem tem 1200x630 (proporcao que Facebook e WhatsApp esperam) e e a
+     mesma foto que abre a pagina, entao o cartao e a pagina combinam. -->
+<meta property="og:image" content="https://marcel0gs.github.io/larissa-martins-estetica/assets/img/og-capa.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sala de atendimento de Larissa Martins, com a maca preparada, a bancada de mármore e a parede de certificados">
+<meta property="og:site_name" content="Larissa Martins Estética Avançada">
 <meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" href="assets/img/logo-coral.webp" type="image/webp">
 
