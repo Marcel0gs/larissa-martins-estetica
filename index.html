@@ -1,0 +1,2085 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Marca que ha JS ANTES do CSS pintar. Serve a uma coisa so aqui: a barra do
+     topo, que nasce invisivel sobre a foto do hero e so pode nascer assim se
+     houver script pra devolver o fundo creme na rolagem. Sem a classe, a barra
+     ja aparece creme desde o primeiro pixel — feia sobre a foto, mas legivel. -->
+<script>document.documentElement.className+=" js";</script>
+
+<title>Larissa Martins Estética Avançada — harmonização facial e corporal em Itabira/MG</title>
+<meta name="description" content="Estética avançada em Itabira/MG com Larissa Martins, fisioterapeuta pós-graduada em dermatofuncional. Harmonização facial, botox, bioestimulador de colágeno, tratamentos corporais e spa day. Rua Demerval Camilo de Oliveira Lage, 130 — Vila São Joaquim.">
+<meta name="theme-color" content="#FBF6F3">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Larissa Martins Estética Avançada — Itabira/MG">
+<meta property="og:description" content="Harmonização que realça, não que exagera. Fisioterapeuta pós-graduada em dermatofuncional, em Itabira/MG.">
+<meta property="og:image" content="assets/img/logo-coral.webp">
+<meta property="og:locale" content="pt_BR">
+
+<link rel="icon" href="assets/img/logo-coral.webp" type="image/webp">
+
+<!-- A foto do espaco e o LCP: e a primeira coisa que pinta e a maior. Ela entra
+     por url() dentro do CSS, e imagem de background so e descoberta depois que
+     o CSS e analisado — tarde demais. Dai o preload. -->
+<link rel="preload" as="image" href="assets/img/sala-ampla.webp" fetchpriority="high">
+
+<!-- ====================================================================
+     CSS embutido de proposito, nao por preguica. Como arquivo externo ele
+     bloqueia a renderizacao; numa pagina unica o cache separado nao paga
+     esse atraso. Mesmo padrao da Realce, do Caldas Coelho e do Rancho Canaa.
+
+     ATENCAO ao editar: caminho de imagem aqui e relativo ao HTML
+     ("assets/img/..."), nao a um style.css ("../img/...").
+     ==================================================================== -->
+<style>
+/* =====================================================================
+   Larissa Martins Estetica Avancada — Itabira/MG
+   ---------------------------------------------------------------------
+   ⚠️ A PALETA NAO FOI INVENTADA. Ela foi AMOSTRADA, pixel a pixel, da
+   faixa de cores que acompanha o mockup da identidade visual dela — o
+   arquivo do iPad em `Fotos e Imagens/`. Sao os nove tons oficiais, do
+   nude claro ao marrom quase preto, extraidos com ffmpeg.
+
+   Isso quer dizer: **nao trocar cor por gosto.** Se precisar de um tom
+   novo, ele sai de dentro dessa escala, nao de fora dela. O creme de
+   fundo e o unico valor derivado (clareamento do nude mais claro), porque
+   a faixa nao trazia um tom de fundo.
+
+   O verde, o azul e o dourado NAO existem nessa identidade. A logo dela e
+   line art fina em nude sobre coral — e por isso os icones deste site sao
+   TAMBEM line art fina, com a mesma espessura de traco. Icone cheio ou
+   colorido brigaria com a marca.
+   ===================================================================== */
+
+:root{
+  /* os nove tons oficiais, na ordem da faixa */
+  --nude-claro:#E2CAC4;
+  --nude:#D3B2A8;
+  --rose:#C39A8B;
+  --terra:#B38272;
+  --terra-esc:#A26D5C;
+  --marrom-med:#83594A;
+  --marrom:#664738;
+  --marrom-esc:#4E362F;
+  --carvao:#362722;
+
+  /* derivados de fundo */
+  --creme:#FBF6F3;
+  --creme-esc:#F4EAE4;
+  --papel:#FFFFFF;
+  --borda:#EADFD8;
+
+  /* texto — os dois passam folgado em contraste sobre creme e branco */
+  --texto:#3A2C26;
+  --texto-suave:#7A6357;
+
+  --raio:14px;
+  --raio-g:22px;
+  --sombra:0 1px 2px rgba(54,39,34,.05), 0 10px 30px rgba(54,39,34,.08);
+
+  /* Altura da barra do topo. Vive numa variavel porque o hero precisa dela
+     DUAS vezes: pra subir por baixo da barra (margin negativa) e pra devolver
+     o espaco por dentro (padding). Mexeu no min-height do .topo__linha, mexe
+     aqui junto — senao o titulo sobe pra debaixo da logo. */
+  --topo-h:76px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+body{
+  margin:0;
+  background:var(--papel);
+  color:var(--texto);
+  font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  font-size:17px;
+  line-height:1.65;
+  overflow-x:hidden;
+}
+
+img{max-width:100%;display:block;height:auto}
+a{color:inherit}
+p{margin:0 0 1rem}
+h1,h2,h3,h4{
+  margin:0;
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:400;
+  line-height:1.18;
+  letter-spacing:-.01em;
+}
+h1{font-size:clamp(2rem,5.4vw,3.4rem)}
+h2{font-size:clamp(1.6rem,4vw,2.5rem)}
+h3{font-size:1.15rem}
+
+/* Topo sticky sem folga entrega toda secao com o titulo por baixo da barra. */
+[id]{scroll-margin-top:92px}
+
+.env{width:min(1160px,100% - 2.5rem);margin-inline:auto}
+.env--estreito{width:min(820px,100% - 2.5rem);margin-inline:auto}
+/* `clip` e nao `hidden` de proposito: `overflow-x:hidden` com y visivel vira
+   y:auto pela especificacao, o que criaria container de rolagem e quebraria o
+   sticky do topo. */
+.secao{padding:clamp(3.5rem,8vw,6rem) 0;overflow-x:clip}
+.secao--creme{background:var(--creme)}
+.secao--nude{background:var(--creme-esc)}
+.secao--escura{background:var(--carvao);color:#EFE4DE}
+.secao--escura h2,.secao--escura h3{color:#fff}
+.secao--escura .chamada{color:#C9B5AA}
+
+.olho{
+  display:inline-block;margin-bottom:.8rem;
+  font-size:.72rem;font-weight:700;letter-spacing:.19em;
+  text-transform:uppercase;color:var(--marrom-med);
+}
+.secao--escura .olho{color:var(--nude)}
+.chamada{max-width:58ch;color:var(--texto-suave);font-size:1.05rem}
+.cabeca{margin-bottom:clamp(2rem,4vw,3rem)}
+
+/* ====================== botoes ====================== */
+.btn{
+  display:inline-flex;align-items:center;gap:.55rem;
+  padding:.9rem 1.7rem;border-radius:999px;
+  background:var(--marrom-med);color:#fff;border:2px solid var(--marrom-med);
+  font-weight:600;font-size:1rem;text-decoration:none;
+  transition:background .18s,border-color .18s,transform .18s;
+}
+.btn:hover{background:var(--marrom);border-color:var(--marrom);transform:translateY(-1px)}
+.btn--linha{background:transparent;color:var(--marrom-esc);border-color:var(--nude)}
+.btn--linha:hover{background:var(--creme-esc);border-color:var(--terra);color:var(--marrom-esc)}
+.secao--escura .btn--linha{color:#fff;border-color:rgba(255,255,255,.35)}
+.secao--escura .btn--linha:hover{background:rgba(255,255,255,.1);border-color:#fff}
+.btn--peq{padding:.68rem 1.3rem;font-size:.92rem;gap:.45rem}
+.btn--peq .btn__ico{width:16px;height:16px}
+.acoes{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.8rem}
+
+/* ====================== icones ======================
+   TODOS os icones deste site sao line art de traco fino, desenhados a mao em
+   SVG e servidos por um sprite unico no comeco do body. Nao ha PNG de icone
+   aqui, e isso e decisao de marca: a logo dela e line art fina, e icone cheio
+   ou colorido brigaria com ela.
+
+   REGRA PRA ICONE NOVO: viewBox 24x24, `fill:none`, `stroke:currentColor`,
+   `stroke-width:1.5`, pontas arredondadas. Espessura diferente no meio do
+   conjunto e a coisa que mais estraga um jogo de icones. */
+.i{width:24px;height:24px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.btn__ico{width:18px;height:18px;fill:currentColor;stroke:none;flex:none}
+
+/* ====================== topo ======================
+   A barra fica INVISIVEL em cima da foto do hero e ganha o creme depois de
+   24px de rolagem. O estado padrao no CSS e o CREME, nao o transparente: quem
+   entra sem JS recebe a barra legivel. O transparente esta preso em `.js .topo`,
+   que so existe quando o script do <head> rodou.
+
+   ⚠️ A LOGO SAO DUAS IMAGENS. `logo-creme.webp` (arte clara) pra barra
+   invisivel sobre a foto, `logo-marrom.webp` (arte escura) pra barra creme.
+   As duas foram geradas do mesmo arquivo original, tirando o fundo coral por
+   luminancia. Se a logo mudar, refazer as DUAS — senao a barra troca de marca
+   no meio da rolagem. */
+.topo{
+  position:sticky;top:0;z-index:60;
+  background:rgba(251,246,243,.95);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--borda);
+  transition:background .28s ease,border-color .28s ease;
+}
+.js .topo{background:transparent;backdrop-filter:none;border-bottom-color:transparent}
+.js .topo--rolado{
+  background:rgba(251,246,243,.95);
+  backdrop-filter:blur(8px);
+  border-bottom-color:var(--borda);
+}
+.topo__linha{display:flex;align-items:center;gap:1rem;min-height:76px}
+
+/* ⚠️ NO TOPO ENTRA SO O SIMBOLO, E O NOME VAI EM TEXTO. A logo original e
+   QUADRADA (simbolo em cima, "LARISSA MARTINS / Estetica Avancada" embaixo).
+   Encaixada em 46px de altura, o nome vira um borrao ilegivel — foi o que
+   aconteceu na primeira montagem.
+   Separando, o simbolo fica grande o bastante pra ler e o nome vira texto de
+   verdade: legivel em qualquer tamanho, selecionavel, e conta pro Google.
+   A logo inteira continua sendo usada onde ha espaco (rodape). */
+.marca{display:flex;align-items:center;gap:.7rem;flex:none;text-decoration:none}
+.marca__simb{position:relative;width:42px;height:42px;flex:none}
+.marca__simb img{position:absolute;inset:0;width:42px;height:42px;transition:opacity .28s ease}
+/* A sombra e obrigatoria, nao enfeite: a versao clara cai sobre uma parede de
+   marmore igualmente clara na foto do hero, e sem ela o traco fino some. */
+.marca__clara{
+  opacity:0;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.55)) drop-shadow(0 2px 12px rgba(0,0,0,.45));
+}
+.marca__nome{
+  display:flex;flex-direction:column;line-height:1.1;
+  font-family:Georgia,serif;color:var(--marrom-esc);
+  transition:color .28s ease;
+}
+.marca__nome b{font-weight:400;font-size:1.02rem;letter-spacing:.06em}
+.marca__nome small{
+  font-family:"Segoe UI",system-ui,sans-serif;
+  font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--texto-suave);transition:color .28s ease;
+}
+.js .topo:not(.topo--rolado) .marca__escura{opacity:0}
+.js .topo:not(.topo--rolado) .marca__clara{opacity:1}
+.js .topo:not(.topo--rolado) .marca__nome{color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6),0 2px 14px rgba(0,0,0,.5)}
+.js .topo:not(.topo--rolado) .marca__nome small{color:rgba(255,255,255,.85)}
+.menu{display:none;margin-left:auto;gap:1.4rem}
+/* min-height de 48px pelo Lighthouse: link de menu com 26px reprova em "tap
+   targets". Como a barra ja tem 76px, o recuo cabe sem mudar nada no desenho. */
+.menu a{
+  display:flex;align-items:center;min-height:48px;
+  text-decoration:none;font-size:.94rem;color:var(--texto-suave);transition:color .28s ease;
+}
+.menu a:hover{color:var(--marrom-med)}
+.js .topo:not(.topo--rolado) .menu a{color:rgba(255,255,255,.94);text-shadow:0 1px 10px rgba(0,0,0,.55)}
+.js .topo:not(.topo--rolado) .menu a:hover{color:#fff}
+.topo__cta{margin-left:auto;padding:.62rem 1.2rem;font-size:.92rem}
+.js .topo:not(.topo--rolado) .topo__cta{box-shadow:0 6px 22px rgba(0,0,0,.3)}
+@media (min-width:1040px){
+  .menu{display:flex}
+  .topo__cta{margin-left:1.4rem}
+}
+@media (max-width:430px){
+  .marca__simb,.marca__simb img{width:34px;height:34px}
+  .marca__nome b{font-size:.88rem}
+  .marca__nome small{font-size:.55rem;letter-spacing:.14em}
+  .topo__cta{padding:.55rem 1rem;font-size:.85rem}
+}
+
+/* ====================== hero ======================
+   ⚠️ ELA NAO TEM FACHADA. Esse e o dado que define este topo, e e a diferenca
+   pra Realce, onde o hero era a fachada com o letreiro. Aqui a foto e o
+   ESPACO POR DENTRO — a sala com bancada de marmore, luminarias geometricas e
+   a parede de certificados. Nao procurar foto de fachada: nao existe.
+
+   A foto ocupa a tela inteira, inclusive por baixo da barra do topo. Dai a
+   dupla `margin-top` negativa + o mesmo valor somado ao padding-top: a secao
+   sobe pra debaixo da barra e devolve o espaco por dentro, pra o texto nao
+   nascer coberto.
+
+   `100svh` e nao `100vh`: no celular o vh conta a barra de endereco que ainda
+   vai sumir, e os botoes nasceriam abaixo da dobra.
+
+   O VEU NAO E UMA CORTINA. Sao tres camadas com funcoes separadas: uma elipse
+   ancorada no canto de baixo a esquerda, que escurece so onde o texto mora;
+   uma faixa rasteira de contraste na base; e um fio escuro no topo, so pra
+   logo e menu terem onde se apoiar. O miolo e o alto da direita ficam com a
+   foto limpa. */
+.hero{
+  position:relative;
+  display:flex;align-items:flex-end;
+  min-height:100vh;
+  min-height:100svh;
+  margin-top:calc(-1 * var(--topo-h));
+  padding:calc(var(--topo-h) + clamp(4rem,10vw,6rem)) 0 clamp(2.8rem,6vw,4.5rem);
+  background-image:
+    /* 1. o canto do texto */
+    radial-gradient(120% 96% at 4% 106%,
+      rgba(30,21,17,.93) 0%, rgba(30,21,17,.80) 22%, rgba(30,21,17,.48) 46%,
+      rgba(30,21,17,.16) 68%, rgba(30,21,17,0) 86%),
+    /* 2. base rasteira, largura toda — assenta o bloco e emenda com a faixa */
+    linear-gradient(0deg, rgba(30,21,17,.60) 0%, rgba(30,21,17,.22) 13%, rgba(30,21,17,0) 32%),
+    /* 3. fio no topo, so pelo contraste da logo clara e do menu.
+          ⚠️ E MAIS FORTE AQUI DO QUE NO SITE DA REALCE, e o motivo esta na foto:
+          la o topo da imagem era a parede bege da fachada; aqui e MARMORE
+          BRANCO com armario branco. Sobre isso, texto branco a .58 de veu
+          continuava lavado. */
+    linear-gradient(180deg, rgba(22,15,12,.72) 0%, rgba(22,15,12,.52) 7%, rgba(22,15,12,.22) 15%, rgba(22,15,12,0) 27%),
+    url("assets/img/sala-ampla.webp"),
+    linear-gradient(160deg,#6B4C3E 0%,#4E362F 45%,#362722 100%);
+  background-size:cover,cover,cover,cover,cover;
+  background-position:center,center,center,center 42%,center;
+  background-repeat:no-repeat;
+  color:#fff;
+}
+.hero h1{
+  max-width:19ch;margin:0;
+  font-size:clamp(2.1rem,5.6vw,3.5rem);
+  text-shadow:0 2px 24px rgba(0,0,0,.55),0 1px 3px rgba(0,0,0,.4);
+}
+.hero__selo{
+  display:inline-flex;align-items:center;gap:.5rem;
+  margin-bottom:1.1rem;padding:.4rem .9rem;border-radius:999px;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);
+  font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#F5E9E4;
+}
+.hero__selo .i{width:14px;height:14px}
+.hero__sub{
+  max-width:48ch;margin:1.1rem 0 0;
+  font-size:clamp(1rem,2.1vw,1.12rem);color:#EDE0DA;
+  text-shadow:0 1px 12px rgba(0,0,0,.5);
+}
+.hero .btn--linha{color:#fff;border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.08)}
+.hero .btn--linha:hover{background:rgba(255,255,255,.18);border-color:#fff;color:#fff}
+
+/* Dica de rolagem em pe, na lateral direita. Existe porque o hero toma a tela
+   inteira: sem ela, a primeira tela parece uma imagem de abertura e nao uma
+   pagina que continua. So onde ha espaco de sobra, e do lado claro da foto. */
+.hero__rolar{display:none}
+@media (min-width:1040px){
+  .hero__rolar{
+    display:flex;align-items:center;gap:.9rem;
+    position:absolute;right:clamp(1rem,2.4vw,2.2rem);bottom:clamp(2.5rem,6vw,4rem);
+    writing-mode:vertical-rl;
+    font-size:.68rem;letter-spacing:.26em;text-transform:uppercase;
+    color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7),0 2px 16px rgba(0,0,0,.6);
+  }
+  .hero__rolar::after{
+    content:"";width:2px;height:64px;border-radius:2px;
+    background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,0));
+    box-shadow:0 1px 8px rgba(0,0,0,.5);
+  }
+}
+
+/* ⚠️ ESTE BLOCO TEM QUE FICAR DEPOIS DE TODAS AS REGRAS BASE DO .hero.
+   Mesma especificidade, e quem vem depois ganha. Se subir, metade dele para
+   de pegar e o sintoma e traicoeiro (o titulo muda, o resto nao). */
+@media (max-width:700px){
+  .hero{
+    min-height:100vh;
+    min-height:100svh;
+    padding:calc(var(--topo-h) + 1.4rem) 0 clamp(5rem,15vw,6.5rem);
+    background-image:
+      linear-gradient(180deg,rgba(22,15,12,.74) 0%,rgba(22,15,12,.54) 6%,rgba(22,15,12,.20) 14%,rgba(22,15,12,0) 25%),
+      linear-gradient(0deg,rgba(30,21,17,.92) 0%,rgba(30,21,17,.80) 18%,rgba(30,21,17,.56) 34%,rgba(30,21,17,.26) 48%,rgba(30,21,17,.05) 62%,rgba(30,21,17,0) 72%),
+      url("assets/img/sala-ampla.webp"),
+      linear-gradient(160deg,#6B4C3E 0%,#4E362F 45%,#362722 100%);
+    background-size:cover,cover,cover,cover;
+    background-position:center,center,center 40%,center;
+  }
+  .hero__selo{display:none}
+  .hero h1{max-width:none;font-size:clamp(1.9rem,8vw,2.6rem)}
+  .hero__sub{font-size:1rem}
+  .hero .acoes{margin-top:1.5rem;gap:.5rem;flex-wrap:nowrap}
+  .hero .acoes .btn{flex:1 1 0;justify-content:center;white-space:nowrap}
+  .hero .acoes .btn--peq{padding:.58rem .5rem;font-size:clamp(.72rem,3.6vw,.85rem);gap:.35rem}
+  .hero .acoes .btn--peq .btn__ico{width:14px;height:14px}
+}
+
+/* ====================== faixa de credenciais ======================
+   Letreiro que rola sozinho, em loop, sem parar.
+
+   COMO O LOOP FECHA SEM COSTURA: o conteudo e duplicado (dois trilhos iguais
+   dentro da pista). Anima-se a PISTA, nao os trilhos, e o alvo e -50% — nao
+   -100%. A pista tem a largura dos DOIS trilhos; 50% dela e a largura de UM.
+   Deslocar essa distancia exata faz o trilho B pousar onde o A comecou.
+
+   ⚠️ SE UM ITEM MUDAR, MUDA NOS DOIS TRILHOS. E HTML duplicado de proposito,
+   nao gerado por JS.
+
+   Com `prefers-reduced-motion` o letreiro para, mas nao pode so parar: os
+   itens ficariam lado a lado, mais largos que a tela, com metade cortada pra
+   sempre. A saida e reverter pro layout empilhado e sumir com a copia. */
+.faixa{background:var(--carvao);color:#EFE4DE;padding:1.5rem 0;overflow:hidden}
+.faixa__pista{
+  display:flex;flex-wrap:nowrap;justify-content:flex-start;text-align:left;
+  width:max-content;margin-inline:0;gap:0;padding-left:1.25rem;
+  animation:letreiro 36s linear infinite;
+  will-change:transform;
+}
+.faixa__trilho{
+  display:flex;flex:none;align-items:center;
+  gap:clamp(1.2rem,4vw,3rem);padding-right:clamp(1.2rem,4vw,3rem);
+}
+.faixa__item{font-size:.86rem;letter-spacing:.03em;white-space:nowrap;display:flex;align-items:center;gap:.5rem}
+.faixa__item b{color:var(--nude);font-weight:600}
+.faixa__item .i{width:17px;height:17px;color:var(--terra)}
+@keyframes letreiro{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){
+  .faixa{overflow:visible}
+  .faixa__pista{
+    animation:none;flex-wrap:wrap;width:auto;margin-inline:auto;padding-left:0;
+    justify-content:center;text-align:center;gap:.6rem clamp(1.2rem,4vw,3rem);
+  }
+  .faixa__trilho{display:contents}
+  .faixa__trilho[aria-hidden]{display:none}
+  .faixa__item{white-space:normal}
+}
+
+/* ====================== como comeca (os tres passos) ======================
+   Pedido do usuario: site VISUAL e DIDATICO. Esta secao existe por isso — ela
+   responde "e como funciona?" antes da pessoa perguntar, e e o que transforma
+   uma lista de procedimentos em um caminho.
+
+   O passo 1 e a Consulta Estetica, e isso vem dela: no catalogo, a descricao
+   e "e super importante antes de qualquer tratamento". Entao a porta de
+   entrada do site e a mesma porta de entrada da clinica. */
+.passos{display:grid;gap:1.1rem;counter-reset:passo}
+@media (min-width:820px){.passos{grid-template-columns:repeat(3,1fr)}}
+.passo{
+  position:relative;
+  background:var(--papel);border:1px solid var(--borda);
+  border-radius:var(--raio);padding:1.9rem 1.6rem 1.7rem;box-shadow:var(--sombra);
+}
+.passo__ico{
+  width:52px;height:52px;border-radius:50%;
+  background:var(--creme-esc);color:var(--marrom-med);
+  display:grid;place-items:center;margin-bottom:1.1rem;
+}
+.passo__ico .i{width:26px;height:26px}
+/* O numero e counter de CSS, nao texto no HTML: se um passo entrar ou sair do
+   meio, a numeracao se refaz sozinha e nao ha "2" duplicado esquecido. */
+.passo__n{
+  counter-increment:passo;
+  position:absolute;top:1.4rem;right:1.5rem;
+  font-family:Georgia,serif;font-size:2.4rem;line-height:1;
+  color:var(--nude-claro);
+}
+.passo__n::before{content:counter(passo)}
+.passo h3{margin-bottom:.5rem;color:var(--marrom-esc)}
+.passo p{margin:0;color:var(--texto-suave);font-size:.97rem}
+
+/* ====================== tratamentos — o catalogo em movimento ======================
+   ⚠️ ERA UMA GRADE DE 13 CARDS. Virou palco + lista em 20/08/2026, a pedido do
+   usuario. O QUE MUDOU E A FORMA, NAO A ORDEM: o agrupamento continua sendo por
+   QUEIXA (rosto, pele, corpo, relaxar) e nao por tecnica — e as marcas de
+   familia continuam visiveis, agora como separadores dentro da propria lista.
+
+   ⚠️ A DESCRICAO DE CADA SERVICO CONTINUA ESCRITA NO HTML, uma por item da
+   lista, e continua sendo o texto literal dela. Isso e deliberado: se as
+   descricoes virassem atributo de JavaScript, as 13 sumiriam do codigo da
+   pagina e o Google deixaria de le-las. O palco NAO guarda texto proprio —
+   ele ECOA o titulo do item ativo.
+
+   A transicao entre as fotos e uma bolha de vidro em WebGL que cresce do
+   centro: refracao, aberracao cromatica na borda e um leve escorrer de
+   liquido. Escrita em WebGL cru de proposito. A versao de origem do efeito
+   pedia three.js (~600 KB) mais GSAP (~70 KB) — mais peso do que a pagina
+   inteira tem hoje, num site de clinica que abre no 4G de Itabira. Sem
+   biblioteca nenhuma o mesmo efeito custa ~6 KB de codigo.
+
+   ⚠️ SE O WEBGL NAO EXISTIR (celular antigo, GPU bloqueada, aba sem contexto)
+   ou se a pessoa pedir menos movimento, a secao NAO quebra: a foto troca em
+   fade simples e a lista continua funcionando igual. O IMG do palco e o
+   estado padrao da pagina; o canvas so aparece DEPOIS que o primeiro quadro
+   foi desenhado com sucesso. */
+.palco__quadro{
+  position:relative;margin-inline:auto;
+  width:min(100%,560px);aspect-ratio:3/4;
+  border-radius:var(--raio-g);overflow:hidden;
+  background:#241a16;box-shadow:0 24px 60px rgba(0,0,0,.45);
+  /* deixa a pagina rolar na vertical mesmo com o gesto de arrastar horizontal */
+  touch-action:pan-y;
+}
+/* As fotos do catalogo sao todas 1200x1600 (retrato). No desktop o quadro
+   afina um pouco pra nao virar uma coluna de 750px de altura — 4/5 corta ~6%
+   em cima e embaixo, que e o que sobra de margem nessas fotos. */
+@media (min-width:900px){.palco__quadro{width:min(100%,600px);aspect-ratio:4/5}}
+.palco__foto,.palco__tela{position:absolute;inset:0;width:100%;height:100%;display:block}
+.palco__foto{object-fit:cover;transition:opacity .3s ease}
+.palco--trocando .palco__foto{opacity:0}
+.palco__tela{opacity:0;transition:opacity .4s ease}
+.palco--gl .palco__tela{opacity:1}
+.palco--gl .palco__foto{visibility:hidden}
+
+/* O veu escuro nao e enfeite: sem ele o titulo branco cai em cima de toalha
+   clara e de parede de marmore e some. Sao dois gradientes — o de baixo
+   segura o titulo, o de cima segura o contador. */
+.palco__veu{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(to top,rgba(24,16,13,.88) 0%,rgba(24,16,13,.5) 26%,rgba(24,16,13,0) 54%),
+    linear-gradient(to bottom,rgba(24,16,13,.38) 0%,rgba(24,16,13,0) 22%);
+}
+/* pointer-events:none e obrigatorio: o bloco de texto e uma faixa que
+   atravessa o quadro inteiro e passaria por cima das setas em tela baixa. */
+.palco__texto{
+  position:absolute;left:0;right:0;bottom:clamp(1.4rem,4vw,2.2rem);
+  padding-inline:clamp(1.2rem,5vw,2.4rem);text-align:center;pointer-events:none;
+  transition:opacity .35s ease,transform .35s ease;
+}
+.palco--sai .palco__texto{opacity:0;transform:translateY(-10px)}
+.palco__familia{
+  display:block;margin-bottom:.55rem;
+  font-size:.68rem;font-weight:700;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--nude);
+}
+.palco__titulo{
+  margin:0;font-family:Georgia,"Times New Roman",serif;line-height:1.12;
+  font-size:clamp(1.5rem,5.6vw,2.3rem);color:#fff;
+  text-shadow:0 2px 24px rgba(0,0,0,.5);
+}
+/* A entrada letra a letra. Cada letra e um span com delay proprio, montado no
+   script.
+   ⚠️ AS PALAVRAS VAO DENTRO DE .pal COM nowrap, e isso nao e detalhe: cada
+   letra virou uma caixa inline-block, e toda fronteira entre caixas inline e
+   uma oportunidade de quebra de linha. Sem o .pal, "Harmonização" quebra no
+   meio da palavra assim que o quadro afina. */
+.palco__titulo .pal{display:inline-block;white-space:nowrap}
+.palco__titulo .pal span{
+  display:inline-block;opacity:0;
+  transform:translateY(.45em);filter:blur(7px);
+  transition:opacity .55s ease,transform .6s cubic-bezier(.2,.8,.2,1),filter .55s ease;
+}
+.palco__titulo--dentro .pal span{opacity:1;transform:none;filter:blur(0)}
+
+.palco__conta{
+  position:absolute;top:clamp(1rem,3.5vw,1.5rem);right:clamp(1rem,3.5vw,1.5rem);
+  font-size:.72rem;letter-spacing:.2em;color:rgba(255,255,255,.7);
+}
+.palco__conta b{color:#fff;font-weight:600}
+/* As setas so existem com JS. Sem script elas nao fariam nada, e botao que nao
+   faz nada e pior do que botao nenhum. */
+.palco__seta{display:none}
+.js .palco__seta{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:46px;height:46px;border-radius:50%;padding:0;
+  display:grid;place-items:center;cursor:pointer;
+  background:rgba(24,16,13,.4);border:1px solid rgba(255,255,255,.3);
+  color:#fff;font-size:1.35rem;line-height:1;opacity:.85;
+  transition:background .18s,border-color .18s,opacity .18s;
+}
+.palco__seta:hover{background:rgba(24,16,13,.78);border-color:#fff;opacity:1}
+.palco__seta:focus-visible{outline:2px solid var(--nude);outline-offset:3px}
+.palco__seta--ant{left:clamp(.6rem,2.5vw,1rem)}
+.palco__seta--prox{right:clamp(.6rem,2.5vw,1rem)}
+
+/* ---------- a lista de catalogo, embaixo do palco ---------- */
+.catalogo{position:relative;margin-top:clamp(1.8rem,4vw,2.6rem)}
+/* A lista SANGRA ate a borda da tela de proposito, cortada no meio de um item.
+   Item cortado e o que diz "tem mais pro lado". Lista que termina certinha na
+   margem parece lista que acabou ali — e ai ninguem arrasta.
+   O margin-inline negativo puxa pros dois lados; o padding devolve o
+   alinhamento do primeiro item com a coluna de texto la de cima. */
+.catalogo__trilho{
+  position:relative;list-style:none;margin:0;
+  margin-inline:calc(50% - 50vw);
+  padding:0 max(1.25rem,calc((100vw - 1160px)/2)) .5rem;
+  display:flex;gap:clamp(1.2rem,3vw,2rem);
+  overflow-x:auto;overscroll-behavior-x:contain;
+  scroll-snap-type:x proximity;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.catalogo__trilho::-webkit-scrollbar{display:none}
+.cat{position:relative;flex:0 0 auto;width:clamp(150px,41vw,196px);scroll-snap-align:center}
+/* A linha de cima e o relogio: ela enche enquanto a foto fica no ar e zera na
+   troca. E o unico lugar do site que mostra que o palco anda sozinho. */
+.cat__linha{display:block;height:1px;background:rgba(255,255,255,.16);margin-bottom:.9rem}
+.cat__linha i{display:block;height:1px;width:0;background:var(--nude);opacity:0;transition:opacity .3s ease}
+.cat[aria-current="true"] .cat__linha{background:rgba(255,255,255,.3)}
+.cat[aria-current="true"] .cat__linha i{opacity:1}
+/* O .catalogo na frente e por especificidade: a regra .secao--escura h3 pinta
+   todo h3 de branco, e sem o prefixo os 13 titulos nasceriam ja no estado
+   ativo — a lista inteira acesa e nenhuma indicacao de qual esta no palco.
+   ⚠️ O tom apagado tem piso: a 50% de opacidade o titulo dava 4,0:1 sobre o
+   carvao e reprovava no contraste. 62% da 5,4:1 e continua lendo como
+   "apagado" ao lado do branco do ativo. Mesma conta vale pra descricao. */
+.catalogo .cat__nome{
+  margin:0;font-family:Georgia,"Times New Roman",serif;
+  font-size:1.08rem;line-height:1.25;
+  color:rgba(239,228,222,.62);transition:color .3s ease;
+}
+.cat__btn{all:unset;display:block;cursor:pointer;color:inherit}
+/* O botao carrega so o titulo (nome acessivel curto), mas o alvo de toque
+   cobre o card inteiro por esse ::after esticado — a descricao inclusive. */
+.cat__btn::after{content:"";position:absolute;inset:-.6rem -.35rem}
+.cat__btn:focus-visible{outline:2px solid var(--nude);outline-offset:6px;border-radius:6px}
+.catalogo .cat:hover .cat__nome{color:var(--nude-claro)}
+.catalogo .cat[aria-current="true"] .cat__nome{color:#fff}
+.cat__desc{
+  margin:.45rem 0 0;font-size:.84rem;line-height:1.5;
+  color:rgba(201,181,170,.8);transition:color .3s ease;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.cat[aria-current="true"] .cat__desc{color:#E4D5CC}
+/* Separador de familia: nao e clicavel e o script pula ele. Serve pra
+   atravessar a lista sabendo em que grupo se esta. A linha transparente no
+   topo existe so pra alinhar o rotulo com os titulos dos vizinhos. */
+.cat--marca{width:auto;max-width:8.5em;color:var(--nude)}
+.cat--marca .cat__linha{background:transparent}
+.cat--marca div{display:flex;flex-direction:column;gap:.45rem}
+.cat--marca .i{width:22px;height:22px}
+.cat--marca span{
+  font-size:.66rem;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;line-height:1.35;
+}
+/* ⚠️ NO CELULAR OS SEPARADORES SAEM. Num trilho de 390px, cada marca comia um
+   terco do que estava visivel e sobrava UM tratamento na tela — o que deixava
+   de parecer lista. A familia continua dita em cima da foto, na linha pequena
+   acima do titulo, entao nada de informacao se perde. */
+@media (max-width:699px){.cat--marca{display:none}}
+/* As duas sombras que dizem "continua pro lado". Encostam na borda da tela
+   porque o trilho tambem encosta. */
+.catalogo::before,.catalogo::after{
+  content:"";position:absolute;top:0;bottom:0;width:clamp(26px,7vw,80px);
+  pointer-events:none;
+}
+.catalogo::before{left:calc(50% - 50vw);background:linear-gradient(to right,var(--carvao),transparent)}
+.catalogo::after{right:calc(50% - 50vw);background:linear-gradient(to left,var(--carvao),transparent)}
+
+/* ====================== a profissional ====================== */
+.dupla{display:grid;gap:clamp(2rem,5vw,3.5rem);align-items:center}
+/* ⚠️ minmax(0,...) e nao 1fr puro. Coluna `auto` de grid cresce ate o
+   max-content do conteudo, e um par de botoes que nao pode quebrar linha
+   estica a coluna inteira pra fora do container — o texto sai cortado no meio
+   da palavra e a sonda de estouro NAO pega, porque body tem overflow-x:hidden.
+   Foi exatamente esse bug que apareceu no site da Realce. */
+.dupla{grid-template-columns:minmax(0,1fr)}
+@media (min-width:900px){.dupla{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}}
+.moldura{
+  position:relative;border-radius:var(--raio-g);overflow:hidden;
+  box-shadow:var(--sombra);background:var(--creme-esc);margin:0;
+}
+.moldura img{width:100%}
+.lista{list-style:none;margin:1.4rem 0 0;padding:0;display:grid;gap:1.1rem}
+.lista li{display:flex;gap:.9rem;align-items:flex-start;color:var(--texto-suave)}
+.lista .i{width:22px;height:22px;color:var(--terra-esc);margin-top:.2rem}
+.lista b{display:block;color:var(--marrom-esc);font-weight:600}
+.lema{
+  margin-top:2rem;padding:1.3rem 1.5rem;
+  border-left:3px solid var(--nude);background:var(--creme);
+  border-radius:0 var(--raio) var(--raio) 0;
+  font-family:Georgia,serif;font-size:1.08rem;color:var(--marrom-esc);
+}
+.lema p{margin:0}
+/* ====================== o espaco ======================
+   ⚠️ ERA 3 COLUNAS COM A PRIMEIRA FOTO OCUPANDO DUAS EM PROPORCAO LIVRE.
+   Fazia sentido quando havia 3 fotos e a foto larga da sala era a melhor
+   coisa da pagina. Deixou de fazer em 20/08/2026, por duas razoes juntas:
+   a foto da sala virou o HERO (nao precisa de palco duas vezes), e entrou
+   uma quarta foto, a do spa day. Com 4 fotos, um 2x2 fecha certinho e sem
+   buraco — a primeira em proporcao livre abria ~300px de vazio ao lado da
+   segunda, e a terceira coluna da segunda linha ficava vazia. */
+.galeria{display:grid;gap:.9rem;grid-template-columns:repeat(2,1fr)}
+/* aspect-ratio + object-fit resolve fotos de proporcoes diferentes na mesma
+   linha: sem isso, cada linha fica na altura da foto mais alta e as menores
+   deixam um buraco de fundo embaixo. */
+.galeria figure{
+  margin:0;border-radius:var(--raio);overflow:hidden;
+  background:var(--creme-esc);aspect-ratio:4/3;
+}
+.galeria img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.galeria figure:hover img{transform:scale(1.04)}
+
+/* ====================== avaliacoes ======================
+   ⚠️ O FORMATO E O DA REALCE, MAS O PLACAR NAO E. La o placar carrega a
+   pagina com "4,9 em 105 avaliacoes"; aqui sao 9 avaliacoes e a CONTAGEM
+   NAO PODE APARECER (regra 5 do CLAUDE.md — numero fraco exposto e pior
+   que numero nenhum). Fica so a nota, que e 5,0 cheio, e a fonte.
+
+   O carrossel existe pelo mesmo motivo de la: seis cards de uma vez viram
+   parede de texto que ninguem le. Um por vez, girando sozinho. */
+.placar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:1rem 2.2rem;
+  padding:1.5rem 1.7rem;margin-bottom:2rem;
+  background:var(--papel);border:1px solid var(--borda);
+  border-radius:var(--raio);box-shadow:var(--sombra);
+}
+.placar__nota{
+  font-family:Georgia,serif;font-size:clamp(2.6rem,7vw,3.4rem);
+  line-height:1;color:var(--marrom-esc);font-variant-numeric:tabular-nums;
+}
+.placar__txt{display:block;margin-top:.35rem;color:var(--texto-suave);font-size:.92rem}
+.placar__txt b{color:var(--marrom-esc)}
+.placar__fonte{margin-left:auto;font-size:.82rem;color:var(--texto-suave)}
+
+/* As estrelas sao duas camadas do mesmo glifo: a de baixo apagada, a de cima
+   em terra e recortada por largura. Animar essa largura de 0 a 100% "preenche"
+   as cinco. Sem imagem, sem SVG, sem biblioteca.
+   ⚠️ Aqui vai a 100% porque a nota e 5,0 — na Realce ia a 98%, que e o que 4,9
+   quer dizer. Mexeu na nota, mexe nessa largura junto. */
+.estrelas{color:var(--terra);letter-spacing:.12em}
+.estrelas-med{position:relative;display:inline-block;line-height:1;font-size:1.25rem;letter-spacing:.12em}
+.estrelas-med span{display:block;white-space:nowrap}
+.estrelas-med .vazias{color:var(--nude-claro)}
+.estrelas-med .cheias{position:absolute;left:0;top:0;overflow:hidden;color:var(--terra);width:100%}
+.js .estrelas-med .cheias{width:0;transition:width 1.5s cubic-bezier(.16,1,.3,1) .15s}
+.js .estrelas-med.contou .cheias{width:100%}
+
+/* Sem JS o carrossel nao existe: os seis depoimentos ficam empilhados e todos
+   legiveis. O JS e que troca o layout pra trilho deslizante. */
+.avals{display:grid;gap:1.1rem}
+.aval{
+  background:var(--papel);border:1px solid var(--borda);
+  border-radius:var(--raio);padding:1.7rem 1.6rem;
+  display:flex;flex-direction:column;gap:.9rem;
+}
+.aval blockquote{margin:0;color:var(--texto);font-size:1.02rem}
+.aval__quem{margin-top:auto;display:flex;align-items:center;gap:.8rem}
+.aval__ini{
+  width:44px;height:44px;border-radius:50%;flex:none;
+  background:var(--nude-claro);color:var(--marrom-esc);
+  display:grid;place-items:center;
+  font-weight:700;font-size:.9rem;letter-spacing:.03em;
+}
+.aval__quem b{display:block;font-weight:600;color:var(--marrom-esc);font-size:.95rem}
+.aval__quem .fonte{display:block;font-size:.79rem;color:var(--texto-suave)}
+
+.carrossel__janela{overflow:hidden}
+.carrossel--on .avals{
+  display:flex;gap:0;
+  transition:transform .7s cubic-bezier(.22,1,.36,1);
+  will-change:transform;
+}
+.carrossel--on .carrossel__janela{max-width:780px;margin-inline:auto}
+/* O trilho e uma linha de flex: a altura fica a do depoimento mais alto e nao
+   pula a cada troca. Custa um pouco de espaco em branco e evita o solavanco,
+   que e o defeito que mais se nota em carrossel. */
+.carrossel--on .aval{flex:0 0 100%;min-width:100%;align-self:stretch}
+/* O depoimento que sai apaga enquanto desliza, e a troca vira dissolucao em
+   vez de empurrao. O aria-hidden ja e escrito pelo JS a cada troca — nao
+   precisa de classe nova pra isso. */
+.carrossel--on .aval{opacity:.15;transition:opacity .7s ease}
+.carrossel--on .aval[aria-hidden="false"]{opacity:1}
+
+.carrossel__controles{display:none;align-items:center;justify-content:center;gap:1rem;margin-top:1.6rem}
+.carrossel--on .carrossel__controles{display:flex}
+.seta{
+  width:48px;height:48px;border-radius:50%;flex:none;
+  background:var(--papel);border:1px solid var(--borda);color:var(--marrom);
+  display:grid;place-items:center;cursor:pointer;
+  font-size:1.1rem;line-height:1;
+  transition:border-color .18s,background .18s,transform .18s,color .18s;
+}
+.seta:hover{border-color:var(--terra);color:var(--terra-esc);transform:translateY(-1px)}
+.seta:focus-visible{outline:2px solid var(--terra-esc);outline-offset:2px}
+.pontos{display:flex;align-items:center;gap:.45rem}
+/* O ponto continua com 8px de BOLINHA, mas o botao inteiro tem 48px de alvo:
+   o desenho vive no ::after e o <button> vira so a area de toque, transparente.
+   Sem isso o Lighthouse reprova (alvo de 8px) e o dedo erra o ponto no
+   celular — os dois problemas se resolvem no mesmo lugar. */
+.ponto{
+  position:relative;width:22px;height:48px;padding:0;border:0;
+  background:none;cursor:pointer;
+  transition:width .3s cubic-bezier(.22,1,.36,1);
+}
+.ponto::after{
+  content:"";position:absolute;inset:50% 0 auto 0;transform:translateY(-50%);
+  height:8px;border-radius:999px;background:var(--nude);
+  transition:background .3s;
+}
+.ponto[aria-current="true"]{width:40px}
+.ponto[aria-current="true"]::after{background:var(--terra-esc)}
+.ponto:focus-visible{outline:2px solid var(--terra-esc);outline-offset:3px;border-radius:8px}
+
+/* ====================== local ====================== */
+.local{display:grid;gap:2rem}
+@media (min-width:880px){.local{grid-template-columns:1fr 1fr;align-items:center}}
+.local__mapa{
+  border-radius:var(--raio-g);overflow:hidden;
+  border:1px solid rgba(255,255,255,.18);
+  min-height:320px;background:#4A3B31;
+}
+.local__mapa iframe{width:100%;height:100%;min-height:320px;border:0;display:block}
+.dados{list-style:none;margin:1.5rem 0 0;padding:0;display:grid;gap:1.1rem}
+.dados li{display:flex;gap:.9rem;align-items:flex-start}
+.dados .i{width:21px;height:21px;color:var(--nude);margin-top:.25rem}
+.dados b{display:block;color:#fff;font-weight:600}
+.dados span{color:#C9B5AA;font-size:.95rem}
+
+/* ====================== rodape ====================== */
+.rodape{background:#2A1E1A;color:#C0AAA0;padding:3rem 0 6.5rem;font-size:.9rem}
+.rodape__grade{display:grid;gap:2rem}
+@media (min-width:760px){.rodape__grade{grid-template-columns:1.3fr 1fr 1fr}}
+.rodape h4{color:#fff;font-size:1rem;margin-bottom:.8rem}
+.rodape a{color:#C0AAA0;text-decoration:none}
+.rodape a:hover{color:var(--nude)}
+.rodape__lista{list-style:none;margin:0;padding:0;display:grid;gap:.35rem}
+.rodape__lista li{display:flex}
+/* min-height de 44px + o gap poe o centro de um link a ~50px do vizinho, que e
+   o que o Lighthouse mede em "tap targets". */
+.rodape__lista a,.rodape__linha{display:flex;align-items:center;gap:.6rem;min-height:44px}
+.rodape__lista .i,.rodape__linha .i{width:17px;height:17px;opacity:.8}
+.rodape__logo img{height:56px;width:auto;margin-bottom:1rem}
+.sociais{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.3rem}
+.social{
+  width:48px;height:48px;border-radius:50%;
+  display:grid;place-items:center;color:#E7D8D0;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);
+  transition:background .18s,border-color .18s,color .18s,transform .18s;
+}
+.social:hover{background:var(--nude);border-color:var(--nude);color:var(--carvao);transform:translateY(-2px)}
+.social:focus-visible{outline:2px solid var(--nude);outline-offset:3px}
+.rodape__rt{
+  margin-top:2.5rem;padding-top:1.5rem;
+  border-top:1px solid rgba(255,255,255,.12);
+  font-size:.82rem;color:#9A857B;
+}
+.rodape__rt b{color:#C0AAA0}
+
+/* Botao flutuante. O padding-bottom grande do rodape existe por causa dele:
+   sem folga ele cobre a ultima linha. */
+.zap{
+  position:fixed;right:16px;bottom:16px;z-index:70;
+  display:flex;align-items:center;gap:.55rem;
+  padding:.8rem 1.25rem;border-radius:999px;
+  background:#25D366;color:#0B3D22;font-weight:700;font-size:.95rem;
+  text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.22);
+}
+.zap svg{width:20px;height:20px;fill:currentColor}
+@media (max-width:430px){.zap span{display:none}.zap{padding:.9rem}}
+</style>
+</head>
+<body>
+
+<!-- Sprite de icones. Um <symbol> por desenho, usado quantas vezes precisar
+     com <use>. Custa uma copia do caminho no arquivo em vez de uma por
+     ocorrencia, e nao gera nenhuma requisicao de rede.
+
+     ⚠️ TODOS sao line art de traco 1.5 em viewBox 24x24 — ver a regra no CSS.
+     Icone novo entra nesse padrao ou nao entra. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <!-- utilitarios -->
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1s-.8 1-.9 1.2c-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.5-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5 4.4.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3ZM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.6 0-3.2-.4-4.5-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-insta" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></symbol>
+  <symbol id="i-relogio" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.2V12l3.2 2"/></symbol>
+  <symbol id="i-email" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.6 6.8 7.5 5.2a1.6 1.6 0 0 0 1.8 0l7.5-5.2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.2 12.3 2.6 2.5 5-5.4"/></symbol>
+  <symbol id="i-diploma" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="12" rx="2"/><path d="M7.5 19.5h9M12 15.5v4"/><path d="M9 8.2h6M9 11h3.5"/></symbol>
+  <!-- os tres passos -->
+  <symbol id="i-conversa" viewBox="0 0 24 24"><path d="M20.5 12.4c0 3.8-3.8 6.9-8.5 6.9-1 0-2-.1-2.9-.4L4 20.5l1.4-3.6A6.5 6.5 0 0 1 3.5 12.4c0-3.8 3.8-6.9 8.5-6.9s8.5 3.1 8.5 6.9Z"/><path d="M9 11.6h6M9 14.2h3.5"/></symbol>
+  <symbol id="i-plano" viewBox="0 0 24 24"><rect x="4.5" y="3.5" width="15" height="17" rx="2.5"/><path d="M9 3.5V6a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V3.5"/><path d="M8.5 11.5h7M8.5 15h4.5"/></symbol>
+  <symbol id="i-agenda" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8.5 3.5v4M15.5 3.5v4"/><path d="m9.6 14.8 1.7 1.7 3.3-3.5"/></symbol>
+  <!-- familias -->
+  <!-- perfil de rosto virado pra esquerda: testa, nariz, queixo e pescoco.
+       A primeira versao era um rosto de frente e lia como pin de mapa. -->
+  <symbol id="i-rosto" viewBox="0 0 24 24"><path d="M16.4 21.2v-2.6c0-.8.4-1.5 1.1-1.9 2-1.4 3.3-3.7 3.3-6.3 0-4.5-3.7-8.1-8.3-8.1S4.2 5.9 4.2 10.4c0 1.8.6 3.4 1.6 4.7l-1.4 2.2c-.3.5.1 1.2.7 1.2h1.6v1.3c0 1 .8 1.8 1.9 1.8"/><path d="M9.6 10.2h.9M14.4 10.2h.9"/></symbol>
+  <symbol id="i-brilho" viewBox="0 0 24 24"><path d="M12 3.5c.6 3.3 1.7 4.4 5 5-3.3.6-4.4 1.7-5 5-.6-3.3-1.7-4.4-5-5 3.3-.6 4.4-1.7 5-5Z"/><path d="M18.5 15.2c.3 1.6.8 2.1 2.4 2.4-1.6.3-2.1.8-2.4 2.4-.3-1.6-.8-2.1-2.4-2.4 1.6-.3 2.1-.8 2.4-2.4Z"/><path d="M5.6 14.4c.2 1.2.6 1.6 1.8 1.8-1.2.2-1.6.6-1.8 1.8-.2-1.2-.6-1.6-1.8-1.8 1.2-.2 1.6-.6 1.8-1.8Z"/></symbol>
+  <symbol id="i-corpo" viewBox="0 0 24 24"><circle cx="12" cy="4.8" r="2.1"/><path d="M12 6.9v6.4"/><path d="M8.2 9.2c1.1.7 2.4 1.1 3.8 1.1s2.7-.4 3.8-1.1"/><path d="M9.6 13.3 8.4 20.5M14.4 13.3l1.2 7.2"/></symbol>
+  <!-- lotus sobre a agua. Dialoga com a logo dela, que tambem e floral.
+       A primeira versao lia como boneco de neve. -->
+  <symbol id="i-relax" viewBox="0 0 24 24"><path d="M12 13.6c-2-2.3-2.6-4.9-1.5-7.3.4-.9 1.1-1.7 1.5-2.5.4.8 1.1 1.6 1.5 2.5 1.1 2.4.5 5-1.5 7.3Z"/><path d="M12 13.6c-2.7-.7-4.8.1-6.1 2.1 1.9 1.5 4.1 1.3 6.1-2.1Z"/><path d="M12 13.6c2.7-.7 4.8.1 6.1 2.1-1.9 1.5-4.1 1.3-6.1-2.1Z"/><path d="M3.8 17.8c2.3 2.1 5.2 3.2 8.2 3.2s5.9-1.1 8.2-3.2"/></symbol>
+  <!-- tratamentos -->
+  <!-- rosto de frente com os PONTOS de aplicacao marcados — que e literalmente
+       o que harmonizacao facial e. A primeira versao (rosto sorridente) lia
+       como emoji. -->
+  <symbol id="i-full-face" viewBox="0 0 24 24"><path d="M12 20.7c-3.9 0-6.9-3.4-6.9-8.3 0-5 3-9.3 6.9-9.3s6.9 4.3 6.9 9.3-3 8.3-6.9 8.3Z"/><circle cx="8.7" cy="10.5" r=".95" fill="currentColor" stroke="none"/><circle cx="15.3" cy="10.5" r=".95" fill="currentColor" stroke="none"/><circle cx="12" cy="14.3" r=".95" fill="currentColor" stroke="none"/><circle cx="9.5" cy="16.7" r=".75" fill="currentColor" stroke="none"/><circle cx="14.5" cy="16.7" r=".75" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-gota" viewBox="0 0 24 24"><path d="M12 3.4c2.9 3.4 5.4 6.3 5.4 9.4a5.4 5.4 0 0 1-10.8 0c0-3.1 2.5-6 5.4-9.4Z"/><path d="M9.7 13.4a2.4 2.4 0 0 0 2.3 2.9"/></symbol>
+  <symbol id="i-colageno" viewBox="0 0 24 24"><circle cx="7" cy="8" r="2.2"/><circle cx="17" cy="8" r="2.2"/><circle cx="12" cy="16.5" r="2.2"/><path d="M9.2 8h5.6M8.2 10 11 14.6M15.8 10 13 14.6"/></symbol>
+  <symbol id="i-labios" viewBox="0 0 24 24"><path d="M3.6 11.4c2.4-2.9 4.4-4 6-4 1.2 0 1.8.7 2.4 1.3.6-.6 1.2-1.3 2.4-1.3 1.6 0 3.6 1.1 6 4"/><path d="M3.6 11.4c1.4 3.4 4.6 5.2 8.4 5.2s7-1.8 8.4-5.2"/><path d="M6.8 11.6h10.4"/></symbol>
+  <symbol id="i-pele" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="9.4" cy="10" r="1"/><circle cx="14.4" cy="9.2" r="1"/><circle cx="13.4" cy="14.4" r="1"/><circle cx="9" cy="14.8" r="1"/></symbol>
+  <symbol id="i-folha" viewBox="0 0 24 24"><path d="M19.6 4.4c0 7.7-3.6 11.6-8.4 11.6a5 5 0 0 1-5.2-5c0-4.6 4.4-6.6 13.6-6.6Z"/><path d="M4.4 19.6c1.6-4.4 4.6-8 8.6-10.4"/></symbol>
+  <symbol id="i-medida" viewBox="0 0 24 24"><rect x="2.5" y="8" width="19" height="8" rx="2"/><path d="M6.5 8v3M10 8v4.4M13.5 8v3M17 8v4.4"/></symbol>
+  <symbol id="i-ondas" viewBox="0 0 24 24"><path d="M3 8.6c1.8-1.8 3.6-1.8 5.4 0s3.6 1.8 5.4 0 3.6-1.8 5.4 0"/><path d="M3 13c1.8-1.8 3.6-1.8 5.4 0s3.6 1.8 5.4 0 3.6-1.8 5.4 0"/><path d="M3 17.4c1.8-1.8 3.6-1.8 5.4 0s3.6 1.8 5.4 0 3.6-1.8 5.4 0"/></symbol>
+  <symbol id="i-maos" viewBox="0 0 24 24"><path d="M9.5 13V5.6a1.6 1.6 0 0 1 3.2 0V11"/><path d="M12.7 11V6.6a1.6 1.6 0 0 1 3.2 0V13"/><path d="M15.9 12.2a1.6 1.6 0 0 1 3.2 0v3.4c0 2.9-2.4 5-5.4 5h-1.8c-2 0-3-.8-4.3-2.4l-2.4-3a1.6 1.6 0 0 1 2.4-2l1.9 1.8"/></symbol>
+  <symbol id="i-vela" viewBox="0 0 24 24"><path d="M12 6.4c1.7-1.4 1.4-2.6.6-3.7-.2 1.4-1.6 1.3-1.9 2.5-.2.7.4 1.1 1.3 1.2Z"/><rect x="8.4" y="8.4" width="7.2" height="12.2" rx="1.8"/><path d="M12 6.4v2"/></symbol>
+  <symbol id="i-diamante" viewBox="0 0 24 24"><path d="M6.4 4.5h11.2l3.4 4.6L12 20 3 9.1l3.4-4.6Z"/><path d="M3 9.1h18M9.2 4.5 12 20l2.8-15.5"/></symbol>
+</svg>
+
+<!-- ===== topo ===== -->
+<header class="topo">
+  <div class="env topo__linha">
+    <!-- Duas logos empilhadas, trocando por opacidade: a escura pra barra
+         creme, a clara pra barra invisivel sobre a foto. So a escura tem `alt`
+         — a clara e a mesma marca repetida e entraria no leitor de tela duas
+         vezes. Ver o bloco do `.topo` no CSS. -->
+    <a class="marca" href="#topo" aria-label="Larissa Martins Estética Avançada — início">
+      <span class="marca__simb">
+        <img class="marca__escura" src="assets/img/simbolo-marrom.webp" width="400" height="394" alt="" aria-hidden="true">
+        <img class="marca__clara" src="assets/img/simbolo-creme.webp" width="400" height="394" alt="" aria-hidden="true">
+      </span>
+      <span class="marca__nome"><b>LARISSA MARTINS</b><small>Estética Avançada</small></span>
+    </a>
+    <nav class="menu">
+      <a href="#comeco">Como funciona</a>
+      <a href="#tratamentos">Tratamentos</a>
+      <a href="#profissional">Quem atende</a>
+      <a href="#espaco">O espaço</a>
+      <a href="#avaliacoes">Avaliações</a>
+      <a href="#local">Onde fica</a>
+    </nav>
+    <a class="btn topo__cta" href="https://wa.me/5531984617272?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20agendar%20uma%20consulta%20est%C3%A9tica." target="_blank" rel="noopener">
+      <svg class="btn__ico" aria-hidden="true"><use href="#i-zap"/></svg>
+      Agendar
+    </a>
+  </div>
+</header>
+
+<!-- ===== hero =====
+     ⚠️ O TITULO E FRASE DELA, LITERAL, da bio do Instagram. Nao trocar por copy
+     de agencia: "harmonização que realça, não que exagera" ataca o medo numero
+     um de quem procura harmonizacao — ficar com cara de "feito". Nenhuma copy
+     que a gente escrevesse chegaria perto disso. -->
+<section class="hero" id="topo">
+  <div class="env">
+    <span class="hero__selo">
+      <svg class="i" aria-hidden="true"><use href="#i-pin"/></svg>
+      Vila São Joaquim · Itabira/MG
+    </span>
+    <h1>Harmonização que realça, não que exagera.</h1>
+    <p class="hero__sub">
+      Estética avançada com Larissa Martins, fisioterapeuta pós-graduada em
+      dermatofuncional. Rosto, pele e corpo, com avaliação antes de qualquer
+      procedimento.
+    </p>
+    <div class="acoes">
+      <a class="btn btn--peq" href="https://wa.me/5531984617272?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20agendar%20uma%20consulta%20est%C3%A9tica." target="_blank" rel="noopener">
+        <svg class="btn__ico" aria-hidden="true"><use href="#i-zap"/></svg>
+        Agendar consulta
+      </a>
+      <a class="btn btn--linha btn--peq" href="#tratamentos">Ver tratamentos</a>
+    </div>
+  </div>
+  <span class="hero__rolar" aria-hidden="true">Role para conhecer</span>
+</section>
+
+<!-- ===== faixa de credenciais =====
+     Os itens aparecem DUAS VEZES de proposito — e o que faz o letreiro fechar
+     sem costura. Se um mudar, muda nos DOIS trilhos, senao o loop passa a
+     repetir informacao desatualizada por meia volta. -->
+<section class="faixa">
+  <div class="env faixa__pista">
+    <div class="faixa__trilho">
+      <span class="faixa__item"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Fisioterapeuta <b>pós-graduada em dermatofuncional</b></span>
+      <span class="faixa__item"><svg class="i" aria-hidden="true"><use href="#i-brilho"/></svg>Método <b>Full Face Impecável</b></span>
+      <span class="faixa__item"><svg class="i" aria-hidden="true"><use href="#i-diploma"/></svg>Ministra <b>cursos e mentoria</b> para profissionais</span>
+      <span class="faixa__item"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg>Rua Demerval Camilo de Oliveira Lage, 130 · <b>Vila São Joaquim</b></span>
+      <span class="faixa__item"><svg class="i" aria-hidden="true"><use href="#i-conversa"/></svg>Avaliação <b>antes de qualquer procedimento</b></span>
+    </div>
+    <div class="faixa__trilho" aria-hidden="true">
+      <span class="faixa__item"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Fisioterapeuta <b>pós-graduada em dermatofuncional</b></span>
+      <span class="faixa__item"><svg class="i" aria-hidden="true"><use href="#i-brilho"/></svg>Método <b>Full Face Impecável</b></span>
+      <span class="faixa__item"><svg class="i" aria-hidden="true"><use href="#i-diploma"/></svg>Ministra <b>cursos e mentoria</b> para profissionais</span>
+      <span class="faixa__item"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg>Rua Demerval Camilo de Oliveira Lage, 130 · <b>Vila São Joaquim</b></span>
+      <span class="faixa__item"><svg class="i" aria-hidden="true"><use href="#i-conversa"/></svg>Avaliação <b>antes de qualquer procedimento</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== como funciona ===== -->
+<section class="secao secao--creme" id="comeco">
+  <div class="env">
+    <div class="cabeca">
+      <span class="olho">Como funciona</span>
+      <h2>Começa com uma conversa, não com um procedimento</h2>
+      <p class="chamada">Ninguém sai daqui com um pacote pronto. O primeiro passo é entender o que o seu rosto e o seu corpo precisam — e é isso que define o resto.</p>
+    </div>
+    <div class="passos">
+      <article class="passo">
+        <span class="passo__n" aria-hidden="true"></span>
+        <div class="passo__ico"><svg class="i" aria-hidden="true"><use href="#i-conversa"/></svg></div>
+        <h3>Consulta estética</h3>
+        <p>A avaliação vem antes de tudo. É onde se olha a pele, a estrutura do rosto e o que você quer mudar — sem compromisso de fechar nada na hora.</p>
+      </article>
+      <article class="passo">
+        <span class="passo__n" aria-hidden="true"></span>
+        <div class="passo__ico"><svg class="i" aria-hidden="true"><use href="#i-plano"/></svg></div>
+        <h3>Plano individual</h3>
+        <p>A partir da avaliação, você entende o que precisa ser feito, em quantas etapas e em quanto tempo. Um plano do seu caso, não um cardápio.</p>
+      </article>
+      <article class="passo">
+        <span class="passo__n" aria-hidden="true"></span>
+        <div class="passo__ico"><svg class="i" aria-hidden="true"><use href="#i-agenda"/></svg></div>
+        <h3>Tratamento e acompanhamento</h3>
+        <p>Cada etapa é feita com hora marcada e acompanhada de perto, com as orientações do pós-procedimento explicadas antes de você ir embora.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== tratamentos =====
+     ⚠️ AGRUPADO POR QUEIXA, NAO POR TECNICA — ver o comentario no CSS.
+     ✅ AS DESCRICOES SAO AS DELA, LITERAIS. O usuario mandou o catalogo inteiro
+     sem truncar em 20/08/2026, e o texto de cada item saiu de la. So dois
+     ajustes de digitacao foram feitos: "aromoterapia" -> "aromaterapia" e
+     "que tanto de incomoda" -> "que tanto te incomoda".
+     ⚠️ NAO reescrever esses textos em linguagem de agencia. O valor deles e
+     serem dela. E **nao ha preco em lugar nenhum**: no catalogo dela os 13
+     servicos estao com R$ 0,00, entao nao ha preco pra vazar pro site.
+
+     ⚠️ A LISTA E A FONTE DA VERDADE, o palco e o eco. Titulo e descricao vivem
+     aqui, escritos no HTML. O que o palco mostra em cima da foto ele copia
+     daqui pelo script. Item novo entra como <li class="cat" data-item ...> com
+     a foto em data-img — o script conta sozinho quantos sao e refaz o "de 14".
+
+     ⚠️ AS FOTOS SAO AS DO CATALOGO DELA (WhatsApp Business), convertidas de
+     PNG 1200x1600 pra webp 900x1200 em `site/assets/img/catalogo/`. O usuario
+     avisou que troca depois — trocar a foto e trocar o data-img, mais nada. -->
+<section class="secao secao--escura" id="tratamentos">
+  <div class="env">
+    <div class="cabeca">
+      <span class="olho">Tratamentos</span>
+      <h2>O que dá para resolver aqui</h2>
+      <p class="chamada">Rosto, pele e corpo no mesmo lugar. Abaixo estão agrupados pelo que você quer mudar — o procedimento certo sai da avaliação.</p>
+    </div>
+
+    <div class="palco" data-palco>
+      <div class="palco__quadro">
+        <!-- Este <img> e o estado padrao da secao: e ele que aparece sem JS,
+             sem WebGL e enquanto o primeiro quadro nao foi desenhado. O canvas
+             entra por cima so quando o WebGL responde. -->
+        <img class="palco__foto" data-foto
+             src="assets/img/catalogo/consulta-estetica.webp"
+             alt="Prancheta com o papel timbrado de Larissa Martins, estetoscópio e adipômetro sobre a bancada da sala de consulta."
+             width="900" height="1200" loading="lazy" decoding="async">
+        <canvas class="palco__tela" data-tela aria-hidden="true"></canvas>
+        <div class="palco__veu" aria-hidden="true"></div>
+        <span class="palco__conta" aria-hidden="true"><b data-atual>01</b> / <span data-total>14</span></span>
+        <button class="palco__seta palco__seta--ant" type="button" data-ant aria-label="Tratamento anterior">‹</button>
+        <button class="palco__seta palco__seta--prox" type="button" data-prox aria-label="Próximo tratamento">›</button>
+        <!-- aria-hidden porque e eco: quem usa leitor de tela ja recebe o
+             titulo e a descricao pela lista logo abaixo, sem ouvir duas vezes. -->
+        <div class="palco__texto" aria-hidden="true">
+          <span class="palco__familia" data-familia>Antes de tudo</span>
+          <p class="palco__titulo" data-titulo>Consulta estética</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="catalogo" data-catalogo>
+      <ol class="catalogo__trilho" data-trilho>
+
+        <li class="cat cat--marca" aria-hidden="true">
+          <span class="cat__linha"></span>
+          <div><svg class="i"><use href="#i-conversa"/></svg><span>Antes de tudo</span></div>
+        </li>
+        <!-- O aria-current="true" nasce escrito no HTML so pra este primeiro:
+             sem JS ninguem marca item nenhum, e a lista inteira ficaria no tom
+             apagado, sem dizer qual foto esta no palco. -->
+        <li class="cat" data-item aria-current="true"
+            data-familia="Antes de tudo"
+            data-img="assets/img/catalogo/consulta-estetica.webp"
+            data-alt="Prancheta com o papel timbrado de Larissa Martins, estetoscópio e adipômetro sobre a bancada da sala de consulta.">
+          <span class="cat__linha" aria-hidden="true"><i></i></span>
+          <h3 class="cat__nome"><button class="cat__btn" type="button">Consulta estética</button></h3>
+          <p class="cat__desc">É super importante antes de qualquer tratamento fazer uma consulta, nela iremos analisar tudo e planejar o melhor tratamento pra você.</p>
+        </li>
+
+        <li class="cat cat--marca" aria-hidden="true">
+          <span class="cat__linha"></span>
+          <div><svg class="i"><use href="#i-rosto"/></svg><span>Para o rosto</span></div>
+        </li>
+        <li class="cat" data-item
+            data-familia="Para o rosto"
+            data-img="assets/img/catalogo/harmonizacao-facial.webp"
+            data-alt="Larissa Martins aplicando preenchimento no rosto de uma paciente com faixa de cabelo, na clínica em Itabira.">
+          <span class="cat__linha" aria-hidden="true"><i></i></span>
+          <h3 class="cat__nome"><button class="cat__btn" type="button">Harmonização facial</button></h3>
+          <p class="cat__desc">Trabalhamos com técnica de reestruturação facial que vai te deixar linda de forma natural.</p>
+        </li>
+        <li class="cat" data-item
+            data-familia="Para o rosto"
+            data-img="assets/img/catalogo/botox.webp"
+            data-alt="Larissa Martins aplicando produto no rosto de uma paciente deitada na maca.">
+          <span class="cat__linha" aria-hidden="true"><i></i></span>
+          <h3 class="cat__nome"><button class="cat__btn" type="button">Botox</button></h3>
+          <p class="cat__desc">Tratamento para amenizar a força muscular, prevenindo rugas.</p>
+        </li>
+        <li class="cat" data-item
+            data-familia="Para o rosto"
+            data-img="assets/img/catalogo/bioestimulador.webp"
+            data-alt="Paciente com touca deitada na maca durante um procedimento facial.">
+          <span class="cat__linha" aria-hidden="true"><i></i></span>
+          <h3 class="cat__nome"><button class="cat__btn" type="button">Bioestimulador de colágeno</button></h3>
+          <p class="cat__desc">Tratamento para melhorar a qualidade de pele.</p>
+        </li>
+        <li class="cat" data-item
+            data-familia="Para o rosto"
+            data-img="assets/img/catalogo/hidra-gloss.webp"
+            data-alt="Close da aplicação de hidratação nos lábios de uma paciente.">
+          <span class="cat__linha" aria-hidden="true"><i></i></span>
+          <h3 class="cat__nome"><button class="cat__btn" type="button">Hidra Gloss</button></h3>
+          <p class="cat__desc">Técnica para hidratação dos lábios. Ajuda a hidratar profundamente, proporcionando lábios lindos e hidratados.</p>
+        </li>
+
+        <li class="cat cat--marca" aria-hidden="true">
+          <span class="cat__linha"></span>
+          <div><svg class="i"><use href="#i-brilho"/></svg><span>Para a pele</span></div>
+        </li>
+        <li class="cat" data-item
+            data-familia="Para a pele"
+            data-img="assets/img/catalogo/limpeza-de-pele.webp"
+            data-alt="Larissa Martins fazendo limpeza de pele em uma paciente deitada na maca.">
+          <span class="cat__linha" aria-hidden="true"><i></i></span>
+          <h3 class="cat__nome"><button class="cat__btn" type="button">Limpeza de pele</button></h3>
+          <p class="cat__desc">Temos na clínica três tipos de limpeza de pele: Ouro, Prata e Bronze.</p>
+        </li>
+        <li class="cat" data-item
+            data-familia="Para a pele"
+            data-img="assets/img/catalogo/tratamentos-faciais.webp"
+            data-alt="Aplicação de um creme facial no rosto de uma paciente durante o tratamento.">
+          <span class="cat__linha" aria-hidden="true"><i></i></span>
+          <h3 class="cat__nome"><button class="cat__btn" type="button">Tratamentos faciais</button></h3>
+          <p class="cat__desc">Temos tratamentos antioxidantes e clareadores.</p>
+        </li>
+
+        <li class="cat cat--marca" aria-hidden="true">
+          <span class="cat__linha"></span>
+          <div><svg class="i"><use href="#i-corpo"/></svg><span>Para o corpo</span></div>
+        </li>
+        <li class="cat" data-item
+            data-familia="Para o corpo"
+            data-img="assets/img/catalogo/harmonizacao-corporal.webp"
+            data-alt="Larissa Martins aplicando um procedimento corporal em uma paciente.">
+          <span class="cat__linha" aria-hidden="true"><i></i></span>
+          <h3 class="cat__nome"><button class="cat__btn" type="button">Harmonização corporal</button></h3>
+          <p class="cat__desc">Tratamento para te ajudar a alcançar a sua melhor versão.</p>
+        </li>
+        <!-- ⚠️ A harmonizacao de gluteo NAO esta no catalogo dela, mas o usuario
+             confirmou em 20/08/2026 que ela AINDA FAZ. Ela ja anuncia isso
+             publicamente (carrossel "Quem e?", destaque no Instagram e uma das
+             avaliacoes), entao o site nao esta inventando procedimento.
+             ⚠️ DUAS COISAS AQUI SAO PROVISORIAS, as duas dependem dela:
+             1. O TEXTO e NOSSO, nao dela — o unico da secao nessa situacao.
+             2. A FOTO e a da sala, porque NAO HA foto desse procedimento na
+                pasta do catalogo. E o unico data-img que nao mostra o que o
+                titulo promete. Chegou foto, troca o data-img. -->
+        <li class="cat" data-item
+            data-familia="Para o corpo"
+            data-img="assets/img/catalogo/harmonizacao-gluteo.webp"
+            data-alt="Sala de atendimento de Larissa Martins, com a maca preparada.">
+          <span class="cat__linha" aria-hidden="true"><i></i></span>
+          <h3 class="cat__nome"><button class="cat__btn" type="button">Harmonização de glúteo</button></h3>
+          <p class="cat__desc">Feita em etapas, com o plano saindo da consulta. O número de sessões depende do seu caso.</p>
+        </li>
+        <li class="cat" data-item
+            data-familia="Para o corpo"
+            data-img="assets/img/catalogo/gordura-localizada.webp"
+            data-alt="Larissa Martins aplicando um aparelho na região abdominal de uma paciente.">
+          <span class="cat__linha" aria-hidden="true"><i></i></span>
+          <h3 class="cat__nome"><button class="cat__btn" type="button">Gordura localizada</button></h3>
+          <p class="cat__desc">Temos tratamentos para acabar de vez com aquela gordurinha que tanto te incomoda.</p>
+        </li>
+        <li class="cat" data-item
+            data-familia="Para o corpo"
+            data-img="assets/img/catalogo/drenagem-modeladora.webp"
+            data-alt="Larissa Martins fazendo drenagem linfática nas pernas de uma paciente.">
+          <span class="cat__linha" aria-hidden="true"><i></i></span>
+          <h3 class="cat__nome"><button class="cat__btn" type="button">Drenagem e modeladora</button></h3>
+          <p class="cat__desc">Drenagem linfática e massagem modeladora pelo método Renata França.</p>
+        </li>
+
+        <li class="cat cat--marca" aria-hidden="true">
+          <span class="cat__linha"></span>
+          <div><svg class="i"><use href="#i-relax"/></svg><span>Para relaxar</span></div>
+        </li>
+        <li class="cat" data-item
+            data-familia="Para relaxar"
+            data-img="assets/img/catalogo/massagem-relaxante.webp"
+            data-alt="Toalhas enroladas e uma vela acesa sobre a bancada de mármore da sala de massagem.">
+          <span class="cat__linha" aria-hidden="true"><i></i></span>
+          <h3 class="cat__nome"><button class="cat__btn" type="button">Massagem relaxante</button></h3>
+          <p class="cat__desc">Feita no corpo todo, em ambiente aconchegante à luz de velas, com som ambiente e aroma relaxante.</p>
+        </li>
+        <li class="cat" data-item
+            data-familia="Para relaxar"
+            data-img="assets/img/catalogo/spa-day.webp"
+            data-alt="Bandeja de spa com vela acesa, óleos essenciais e pétalas de rosa sobre a cama.">
+          <span class="cat__linha" aria-hidden="true"><i></i></span>
+          <h3 class="cat__nome"><button class="cat__btn" type="button">Spa day</button></h3>
+          <p class="cat__desc">Inclui a massagem relaxante com óleos essenciais, aromaterapia, cromoterapia e musicoterapia, mais hidratação facial.</p>
+        </li>
+        <li class="cat" data-item
+            data-familia="Para relaxar"
+            data-img="assets/img/catalogo/spa-day-premium.webp"
+            data-alt="Espumante no balde de gelo, chocolates, flores e cartão personalizado preparados para a experiência premium.">
+          <span class="cat__linha" aria-hidden="true"><i></i></span>
+          <h3 class="cat__nome"><button class="cat__btn" type="button">Spa day + experiência premium</button></h3>
+          <p class="cat__desc">Tudo o que o spa day tem, mais espumante, chocolates, flores e um cartão personalizado.</p>
+        </li>
+
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ⚠️⚠️ AQUI ENTRA A SECAO DE ANTES E DEPOIS.
+     Decisao do usuario em 20/08/2026: antes e depois ENTRA no site.
+     A secao NAO foi montada ainda porque **nao ha nenhum par de foto na pasta
+     `Fotos e Imagens/`** — as fotos estao no Instagram dela e ainda nao foram
+     baixadas. O padrao do workspace proibe deixar marcador visivel na pagina,
+     entao a secao simplesmente nao existe em vez de existir vazia.
+
+     QUANDO AS FOTOS CHEGAREM, esta secao entra aqui, entre "tratamentos" e
+     "quem atende", e o lugar e proposital: a pessoa acabou de ler o que da pra
+     resolver, e a prova vem em seguida.
+
+     PENDENCIA QUE VEM JUNTO: autorizacao de imagem de cada paciente. Vale em
+     qualquer conselho e na LGPD. Ver o bloco 2 do CLAUDE.md do projeto. -->
+
+<!-- ===== quem atende ===== -->
+<section class="secao secao--creme" id="profissional">
+  <div class="env dupla">
+    <figure class="moldura">
+      <img src="assets/img/larissa-retrato.webp" width="900" height="1030" loading="lazy" decoding="async"
+           alt="Larissa Martins, fisioterapeuta pós-graduada em dermatofuncional, responsável pela clínica">
+    </figure>
+    <div>
+      <span class="olho">Quem atende você</span>
+      <h2>Prazer, Larissa.</h2>
+      <!-- ⚠️ OS TRES BLOCOS ABAIXO SAO COPY LITERAL DELA, do carrossel "Quem é?"
+           do Instagram (transcrito em empresa.md). Nao trocar por texto
+           generico: "já dei aula em faculdade" e "ministro cursos e mentoria"
+           sao verificaveis e dificeis de copiar, e e neles que este site se
+           apoia — porque em numero de avaliacao ele nao pode se apoiar. -->
+      <p class="chamada">Fisioterapeuta pós-graduada em dermatofuncional, apaixonada por transformar. Mineira — e quando for ser atendida por mim já espere muita simpatia, atenção e um sotaque que todo mundo ama.</p>
+      <ul class="lista">
+        <li>
+          <svg class="i" aria-hidden="true"><use href="#i-diploma"/></svg>
+          <span><b>Formação</b>Fisioterapeuta com pós-graduação em dermatofuncional</span>
+        </li>
+        <li>
+          <svg class="i" aria-hidden="true"><use href="#i-conversa"/></svg>
+          <span><b>Ensina quem já é da área</b>Já deu aula em faculdade para turma de fisioterapia e ministra cursos e mentoria para profissionais</span>
+        </li>
+        <li>
+          <svg class="i" aria-hidden="true"><use href="#i-brilho"/></svg>
+          <span><b>Sempre estudando</b>Cursos de atualização em harmonização facial e corporal, botox, reestruturação facial e rejuvenescimento</span>
+        </li>
+      </ul>
+      <div class="lema">
+        <p>“Meu lema de vida é: não deixe pra cuidar amanhã do que pode cuidar hoje.”</p>
+      </div>
+      <div class="acoes">
+        <a class="btn" href="https://wa.me/5531984617272?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20agendar%20uma%20consulta%20est%C3%A9tica." target="_blank" rel="noopener">Agendar uma consulta</a>
+        <a class="btn btn--linha" href="https://instagram.com/dralarissamartinst" target="_blank" rel="noopener">Ver o Instagram</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== o espaco =====
+     ⚠️ A PAREDE DE CERTIFICADOS E O MELHOR ATIVO VISUAL DELA. Como o site nao
+     pode se apoiar em numero de avaliacao, essa parede e o substituto natural
+     da prova social: mostra "varios cursos de atualizacao" sem escrever uma
+     palavra. Ela aparece em duas das quatro fotos. Se um dia vier uma foto
+     frontal so da parede, ela entra aqui.
+     ⚠️ AS DUAS FOTOS DO MEIO (certificados e maca) SAO DE CELULAR, com luz
+     fria, e agora destoam — a do topo e a do spa day sao muito melhores.
+     Trocar assim que ela mandar fotos novas do espaco. -->
+<section class="secao" id="espaco">
+  <div class="env">
+    <div class="cabeca">
+      <span class="olho">O espaço</span>
+      <h2>Onde você vai ser atendida</h2>
+      <p class="chamada">Sala própria, reservada e silenciosa, em Itabira. E, na parede, os certificados de cada curso que sustenta o que é feito aqui dentro.</p>
+    </div>
+    <div class="galeria">
+      <figure>
+        <img src="assets/img/sala-ampla.webp" width="1880" height="1880" loading="lazy" decoding="async"
+             alt="Sala de atendimento vista por inteiro, com maca, poltrona rosa, luminárias pendentes e a parede de certificados">
+      </figure>
+      <figure>
+        <img src="assets/img/sala-certificados.webp" width="1200" height="1266" loading="lazy" decoding="async"
+             alt="Bancada de mármore com armários, orquídea e a parede de certificados emoldurados ao lado da maca">
+      </figure>
+      <figure>
+        <img src="assets/img/sala-maca.webp" width="1100" height="1375" loading="lazy" decoding="async"
+             alt="Maca preparada com toalhas, diante da bancada de mármore da sala de atendimento">
+      </figure>
+      <!-- O spa day montado, na propria sala: a poltrona rose do fundo e a
+           MESMA da foto do topo, o que amarra a galeria com o hero. Entrou em
+           20/08/2026 e resolve dois buracos de uma vez — o spa day era o
+           servico mais fotografado dela e nao tinha imagem nenhuma na pagina,
+           e agora ele tambem tem voz na secao de avaliacoes (a Glaucia). -->
+      <figure>
+        <img src="assets/img/spa-day.webp" width="1100" height="1466" loading="lazy" decoding="async"
+             alt="Spa day montado na clínica: toalhas brancas com pétalas de rosa, chinelos, bandeja dourada e difusor, com a poltrona rosé ao fundo">
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ===== avaliacoes =====
+     ⚠️ TRIAGEM OBRIGATORIA — a lista completa, com o motivo de cada corte, esta
+     em `empresa.md`. Duas ficaram de fora:
+       - Cassio: diz que "aqui na cidade geralmente somos mal tratados".
+         Depreciar a concorrencia numa cidade pequena volta contra a cliente
+       - Cynara: "bumbum de milhoes" e promessa de resultado, e o procedimento
+         citado tem pendencia regulatoria em aberto
+     A da Giulia entrou CORTADA: o original comparava com "outros profissionais"
+     que a fizeram sentir dor. Elogio que so existe as custas de outro nao entra.
+     ⚠️ NUNCA reproduzir as respostas do proprietario: uma delas chama a Giulia
+     de "Guilherme". -->
+<section class="secao secao--nude" id="avaliacoes">
+  <div class="env">
+    <div class="cabeca">
+      <span class="olho">Quem já passou por aqui</span>
+      <h2>O que as pacientes escrevem no Google</h2>
+    </div>
+
+    <!-- O 5,0 sobe de 0 ate o valor real quando a secao entra na tela, e as
+         estrelas se preenchem junto. O valor final mora no data-alvo e TAMBEM
+         escrito no HTML, entao sem JS a nota aparece pronta.
+         ⚠️ NAO acrescentar contagem de avaliacoes aqui. Sao 9, e a regra 5 do
+         CLAUDE.md diz que numero fraco exposto e pior que numero nenhum. -->
+    <div class="placar" data-placar>
+      <div class="placar__nota" data-conta data-alvo="5.0" data-casas="1">5,0</div>
+      <div>
+        <span class="estrelas-med" data-estrelas aria-hidden="true">
+          <span class="vazias">★★★★★</span>
+          <span class="cheias">★★★★★</span>
+        </span>
+        <span class="placar__txt">Nota máxima nas avaliações de pacientes no <b>Google</b></span>
+      </div>
+      <span class="placar__fonte">Fonte: Google · agosto de 2026</span>
+    </div>
+
+    <div class="carrossel" data-carrossel>
+      <div class="carrossel__janela">
+        <div class="avals" data-trilho>
+      <article class="aval">
+        <div class="estrelas" aria-hidden="true">★★★★★</div>
+        <blockquote>“Fiz limpeza de pele pra tirar os cravos que tanto me incomodavam e superou minhas expectativas. Minha pele ficou incrível, super macia, clara, nunca tinha ficado assim tão boa. Saí de lá encantado.”</blockquote>
+        <div class="aval__quem">
+          <span class="aval__ini" aria-hidden="true">AL</span>
+          <div><b>Ailton Lares</b><span class="fonte">Google</span></div>
+        </div>
+      </article>
+
+      <!-- Chegou na leva de 20/08/2026, quando a ficha do Google passou de 9
+           pra 13 avaliacoes. Entra porque e a UNICA que fala do Spa day, que e
+           o servico mais fotografado dela e nao tinha voz nenhuma na pagina. -->
+      <article class="aval">
+        <div class="estrelas" aria-hidden="true">★★★★★</div>
+        <blockquote>“A Larissa foi quem me atendeu no WhatsApp e foi atenciosa aos detalhes do início ao fim. Eu buscava um Spa day como uma surpresa de aniversário e ela fez uma entrega excepcional. Recomendo mil vezes.”</blockquote>
+        <div class="aval__quem">
+          <span class="aval__ini" aria-hidden="true">GF</span>
+          <div><b>Glaucia Ferreira</b><span class="fonte">Google</span></div>
+        </div>
+      </article>
+
+      <article class="aval">
+        <div class="estrelas" aria-hidden="true">★★★★★</div>
+        <blockquote>“Nunca tinha feito uma limpeza de pele tão boa, não senti dor. Saí com a pele super clara, linda e macia. Simplesmente amei.”</blockquote>
+        <div class="aval__quem">
+          <span class="aval__ini" aria-hidden="true">GV</span>
+          <div><b>Giulia Valadares</b><span class="fonte">Google</span></div>
+        </div>
+      </article>
+
+      <article class="aval">
+        <div class="estrelas" aria-hidden="true">★★★★★</div>
+        <blockquote>“A clínica é super fofa, cheirosa e aconchegante. A profissional que me atendeu é super simpática, atenciosa e entrega muito além do que eu esperava. Virei cliente fiel.”</blockquote>
+        <div class="aval__quem">
+          <span class="aval__ini" aria-hidden="true">MS</span>
+          <div><b>Marcio Silva</b><span class="fonte">Google</span></div>
+        </div>
+      </article>
+
+      <article class="aval">
+        <div class="estrelas" aria-hidden="true">★★★★★</div>
+        <blockquote>“Fui muito bem recebida e os procedimentos são excelentes. Minha pele ficou renovada e as massagens são maravilhosas. Simplesmente amei!”</blockquote>
+        <div class="aval__quem">
+          <span class="aval__ini" aria-hidden="true">BF</span>
+          <div><b>Beatriz Ferreira</b><span class="fonte">Google · Local Guide</span></div>
+        </div>
+      </article>
+
+      <article class="aval">
+        <div class="estrelas" aria-hidden="true">★★★★★</div>
+        <blockquote>“Me ajudou bastante na autoestima e é uma ótima profissional.”</blockquote>
+        <div class="aval__quem">
+          <span class="aval__ini" aria-hidden="true">AA</span>
+          <div><b>Amanda Alves</b><span class="fonte">Google</span></div>
+        </div>
+      </article>
+
+      <article class="aval">
+        <div class="estrelas" aria-hidden="true">★★★★★</div>
+        <blockquote>“É super atenciosa, explica tudo direitinho, ainda passa todas as orientações do pós-procedimento e acompanha tudo.”</blockquote>
+        <div class="aval__quem">
+          <span class="aval__ini" aria-hidden="true">CS</span>
+          <div><b>Cynara Santana</b><span class="fonte">Google</span></div>
+        </div>
+      </article>
+        </div>
+      </div>
+
+      <div class="carrossel__controles">
+        <button class="seta" type="button" data-anterior aria-label="Depoimento anterior">‹</button>
+        <div class="pontos" data-pontos role="group" aria-label="Escolher depoimento"></div>
+        <button class="seta" type="button" data-proximo aria-label="Próximo depoimento">›</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== onde fica =====
+     ⚠️ CONFERIR O PIN DO MAPA COM O OLHO antes de publicar. O embed e por busca
+     de endereco, sem coordenada travada — pin errado em site de clinica manda
+     paciente pro lugar errado. -->
+<section class="secao secao--escura" id="local">
+  <div class="env">
+    <div class="local">
+      <div>
+        <span class="olho">Onde fica</span>
+        <h2>Vila São Joaquim, Itabira</h2>
+        <!-- ✅ Horario completo confirmado em 20/08/2026, da ficha do Google:
+             seg a sex 09:00-19:00, sabado 09:00-13:00, domingo fechado.
+             Antes o site dizia so "com hora marcada" — verdadeiro mas fraco.
+             ✅ Formas de pagamento tambem da ficha (credito, debito, por
+             aproximacao/NFC) mais o Pix, que o usuario mandou incluir. -->
+        <ul class="dados">
+          <li>
+            <svg class="i" aria-hidden="true"><use href="#i-pin"/></svg>
+            <span><b>Endereço</b>Rua Demerval Camilo de Oliveira Lage, 130 — Vila São Joaquim, Itabira/MG, 35900-406</span>
+          </li>
+          <li>
+            <svg class="i" aria-hidden="true"><use href="#i-relogio"/></svg>
+            <span><b>Horário</b>Segunda a sexta, 9h às 19h · Sábado, 9h às 13h<br>Sempre com hora marcada, agendada pelo WhatsApp</span>
+          </li>
+          <li>
+            <svg class="i" aria-hidden="true"><use href="#i-zap"/></svg>
+            <span><b>WhatsApp</b>(31) 98461-7272</span>
+          </li>
+          <li>
+            <svg class="i" aria-hidden="true"><use href="#i-email"/></svg>
+            <span><b>E-mail</b>lamartinsestetica@gmail.com</span>
+          </li>
+          <li>
+            <svg class="i" aria-hidden="true"><use href="#i-plano"/></svg>
+            <span><b>Pagamento</b>Pix, cartão de crédito, débito e por aproximação</span>
+          </li>
+          <li>
+            <svg class="i" aria-hidden="true"><use href="#i-check"/></svg>
+            <span><b>No local</b>Wi-Fi liberado para quem está em atendimento</span>
+          </li>
+        </ul>
+        <div class="acoes">
+          <a class="btn" href="https://wa.me/5531984617272?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20agendar%20uma%20consulta%20est%C3%A9tica." target="_blank" rel="noopener">Agendar pelo WhatsApp</a>
+          <a class="btn btn--linha" href="https://www.google.com/maps/search/?api=1&query=Rua+Demerval+Camilo+de+Oliveira+Lage%2C+130%2C+Vila+S%C3%A3o+Joaquim%2C+Itabira+-+MG" target="_blank" rel="noopener">Como chegar</a>
+        </div>
+      </div>
+      <div class="local__mapa">
+        <iframe
+          src="https://www.google.com/maps?q=Rua+Demerval+Camilo+de+Oliveira+Lage,+130,+Vila+S%C3%A3o+Joaquim,+Itabira+-+MG,+35900-406&z=17&output=embed"
+          title="Mapa — Larissa Martins Estética Avançada, Rua Demerval Camilo de Oliveira Lage, 130, Vila São Joaquim, Itabira/MG"
+          loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== rodape ===== -->
+<footer class="rodape">
+  <div class="env rodape__grade">
+    <div>
+      <span class="rodape__logo"><img src="assets/img/logo-creme.webp" width="760" height="760" alt="Larissa Martins Estética Avançada"></span>
+      <p>Harmonização que realça, não que exagera.<br>Rua Demerval Camilo de Oliveira Lage, 130 — Vila São Joaquim, Itabira/MG.</p>
+      <div class="sociais">
+        <a class="social" href="https://wa.me/5531984617272" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+          <svg class="i" aria-hidden="true"><use href="#i-zap"/></svg>
+        </a>
+        <a class="social" href="https://instagram.com/dralarissamartinst" target="_blank" rel="noopener" aria-label="Instagram, @dralarissamartinst">
+          <svg class="i" aria-hidden="true"><use href="#i-insta"/></svg>
+        </a>
+        <a class="social" href="mailto:lamartinsestetica@gmail.com" aria-label="Mandar e-mail">
+          <svg class="i" aria-hidden="true"><use href="#i-email"/></svg>
+        </a>
+      </div>
+    </div>
+    <div>
+      <h4>Contato</h4>
+      <ul class="rodape__lista">
+        <li><a href="https://wa.me/5531984617272" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg>WhatsApp (31) 98461-7272</a></li>
+        <li><a href="mailto:lamartinsestetica@gmail.com"><svg class="i" aria-hidden="true"><use href="#i-email"/></svg>lamartinsestetica@gmail.com</a></li>
+        <li><a href="https://instagram.com/dralarissamartinst" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-insta"/></svg>@dralarissamartinst</a></li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=Rua+Demerval+Camilo+de+Oliveira+Lage%2C+130%2C+Vila+S%C3%A3o+Joaquim%2C+Itabira+-+MG" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg>Vila São Joaquim, Itabira/MG</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Navegue</h4>
+      <ul class="rodape__lista">
+        <li><a href="#comeco">Como funciona</a></li>
+        <li><a href="#tratamentos">Tratamentos</a></li>
+        <li><a href="#profissional">Quem atende</a></li>
+        <li><a href="#espaco">O espaço</a></li>
+        <li><a href="#avaliacoes">Avaliações</a></li>
+        <li><a href="#local">Onde fica</a></li>
+      </ul>
+    </div>
+  </div>
+  <!-- ⚠️ FALTA O NUMERO DO CREFITO NESTA LINHA. Ela e fisioterapeuta e o
+       registro tem que aparecer, como o CRO aparece no site da Realce. O numero
+       nao esta em nenhuma fonte publica dela — pedir antes de publicar. -->
+  <div class="env rodape__rt">
+    <p style="margin:0">Responsável técnica: <b>Larissa Martins — Fisioterapeuta Dermatofuncional</b>. Larissa Martins Estética Avançada — Itabira/MG.</p>
+    <p style="margin:.4rem 0 0">As informações deste site têm caráter informativo e não substituem a avaliação presencial. Resultados variam de pessoa para pessoa.</p>
+  </div>
+</footer>
+
+<a class="zap" href="https://wa.me/5531984617272?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20agendar%20uma%20consulta%20est%C3%A9tica." target="_blank" rel="noopener" aria-label="Agendar pelo WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1s-.8 1-.9 1.2c-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.5-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5 4.4.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3ZM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.6 0-3.2-.4-4.5-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></svg>
+  <span>Agendar</span>
+</a>
+
+<!-- ====================================================================
+     UM SCRIPT SO, e ele faz UMA COISA: devolver o fundo creme da barra do
+     topo depois que a pessoa sai do hero.
+
+     Regra que vale pra qualquer coisa que entrar aqui: **se o JS nao rodar, a
+     pagina continua completa e legivel.** Sem a classe `.js` no <html>, a barra
+     ja nasce creme e nada mais depende de script.
+
+     ⚠️ NAO INTRODUZIR "aparecer ao rolar" NESTE SITE. No projeto da Realce esse
+     efeito foi implementado, calibrado tres vezes e removido, com este veredito
+     do usuario: "isso está dando a impressão de que o site está demorando a
+     carregar no celular". Num celular a rolagem e curta e o dedo anda rapido —
+     o conteudo esta sempre entrando e a pagina nunca parece pronta.
+     ==================================================================== -->
+<script>
+(function(){
+  "use strict";
+  var mq = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+  var semMovimento = !!(mq && mq.matches);
+  var temObs = "IntersectionObserver" in window;
+
+  /* ---------- 1. a barra do topo em cima da foto do hero ---------- */
+  /* A foto sobe por baixo da barra, entao ela nasce sem fundo e so ganha o
+     creme depois de 24px de rolagem. Fica ANTES de tudo aqui de proposito: o
+     carrossel la embaixo tem um `return` que aborta o resto da funcao, e a
+     barra nao pode depender de existir carrossel na pagina. */
+  var topo = document.querySelector(".topo");
+  if (topo) {
+    var marcaTopo = function(){
+      var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+      topo.classList.toggle("topo--rolado", y > 24);
+    };
+    marcaTopo();
+    window.addEventListener("scroll", marcaTopo, { passive: true });
+  }
+
+  /* ---------- 2. o placar que conta ---------- */
+  function formata(v, casas){
+    return casas ? v.toFixed(casas).replace(".", ",") : String(Math.round(v));
+  }
+  function conta(el){
+    var alvo  = parseFloat(el.getAttribute("data-alvo"));
+    var casas = parseInt(el.getAttribute("data-casas") || "0", 10);
+    if (semMovimento || !window.requestAnimationFrame) { el.textContent = formata(alvo, casas); return; }
+    var t0 = null, dur = 1500;
+    requestAnimationFrame(function passo(t){
+      if (t0 === null) t0 = t;
+      var p = Math.min((t - t0) / dur, 1);
+      var e = 1 - Math.pow(1 - p, 3);          /* easeOutCubic: rapido e desacelera */
+      el.textContent = formata(alvo * e, casas);
+      if (p < 1) requestAnimationFrame(passo);
+    });
+  }
+  var placar = document.querySelector("[data-placar]");
+  if (placar) {
+    var dispara = function(){
+      Array.prototype.forEach.call(placar.querySelectorAll("[data-conta]"), conta);
+      var est = placar.querySelector("[data-estrelas]");
+      if (est) est.classList.add("contou");
+    };
+    if (!temObs) { dispara(); }
+    else {
+      var obsP = new IntersectionObserver(function(is){
+        is.forEach(function(i){ if (i.isIntersecting) { dispara(); obsP.disconnect(); } });
+      }, { threshold: 0.35 });
+      obsP.observe(placar);
+    }
+  }
+
+  /* ---------- 3. carrossel dos depoimentos ---------- */
+  var car = document.querySelector("[data-carrossel]");
+  if (!car) return;
+  var trilho = car.querySelector("[data-trilho]");
+  var slides = Array.prototype.slice.call(trilho.children);
+  if (slides.length < 2) return;
+
+  car.classList.add("carrossel--on");
+  var pontos = car.querySelector("[data-pontos]");
+  var atual = 0, timer = null, INTERVALO = 5000;
+
+  function ir(n){
+    atual = (n + slides.length) % slides.length;
+    trilho.style.transform = "translateX(" + (-atual * 100) + "%)";
+    Array.prototype.forEach.call(pontos.children, function(p, i){
+      p.setAttribute("aria-current", i === atual ? "true" : "false");
+    });
+    /* Esconde os inativos do leitor de tela: senao ele le os seis depoimentos
+       seguidos, como se fossem um paragrafo so. */
+    slides.forEach(function(s, i){ s.setAttribute("aria-hidden", i === atual ? "false" : "true"); });
+  }
+  function parar(){ if (timer) { clearInterval(timer); timer = null; } }
+  function girar(){ parar(); if (!semMovimento) timer = setInterval(function(){ ir(atual + 1); }, INTERVALO); }
+
+  slides.forEach(function(s, i){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "ponto";
+    b.setAttribute("aria-label", "Depoimento " + (i + 1) + " de " + slides.length);
+    b.addEventListener("click", function(){ ir(i); girar(); });
+    pontos.appendChild(b);
+  });
+
+  car.querySelector("[data-anterior]").addEventListener("click", function(){ ir(atual - 1); girar(); });
+  car.querySelector("[data-proximo]").addEventListener("click", function(){ ir(atual + 1); girar(); });
+
+  /* Parar enquanto a pessoa esta navegando por teclado ou mirando uma seta.
+     ATENCAO: NAO por o pausar no carrossel inteiro. Ele fica no meio da pagina,
+     e quem rola de mouse deixa o cursor parado bem em cima dele — o giro
+     automatico nunca acontecia, e parecia defeito. Pausar so na faixa dos
+     controles resolve sem tirar o "para quando alguem vai interagir".
+     (Defeito encontrado e corrigido no site da Realce.) */
+  var controles = car.querySelector(".carrossel__controles");
+  if (controles) {
+    controles.addEventListener("mouseenter", parar);
+    controles.addEventListener("mouseleave", girar);
+  }
+  car.addEventListener("focusin", parar);
+  car.addEventListener("focusout", girar);
+  document.addEventListener("visibilitychange", function(){
+    if (document.hidden) parar(); else girar();
+  });
+
+  /* Arrastar com o dedo. */
+  var x0 = null;
+  car.addEventListener("touchstart", function(e){ x0 = e.touches[0].clientX; parar(); }, { passive: true });
+  car.addEventListener("touchend", function(e){
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 40) ir(atual + (dx < 0 ? 1 : -1));
+    x0 = null;
+    girar();
+  }, { passive: true });
+
+  ir(0);
+  girar();
+})();
+</script>
+
+<!-- ====================================================================
+     SEGUNDO SCRIPT DA PAGINA — o catalogo animado da secao "tratamentos".
+
+     ⚠️ POR QUE ELE NAO ENTROU NO SCRIPT DE CIMA. O de cima segura coisas que a
+     pagina inteira depende (a barra do topo, o placar, o carrossel). Este aqui
+     mexe com WebGL, que e a unica parte do site que depende de hardware e de
+     driver de video: e o candidato natural a estourar num aparelho estranho.
+     Em arquivo separado, um erro aqui derruba SO o efeito da foto — a barra do
+     topo e o carrossel continuam de pe. No mesmo bloco, derrubaria os tres.
+
+     A regra do site continua valendo: **se o JS nao rodar, a pagina continua
+     completa e legivel.** Sem script, a secao mostra a primeira foto do
+     catalogo e a lista inteira dos 14 tratamentos, com titulo e descricao.
+     ==================================================================== -->
+<script>
+(function(){
+  "use strict";
+
+  var palco  = document.querySelector("[data-palco]");
+  var trilho = document.querySelector("[data-trilho]");
+  if (!palco || !trilho) return;
+
+  var quadro = palco.querySelector(".palco__quadro");
+  var foto   = palco.querySelector("[data-foto]");
+  var tela   = palco.querySelector("[data-tela]");
+  var elFam  = palco.querySelector("[data-familia]");
+  var elTit  = palco.querySelector("[data-titulo]");
+  var elAt   = palco.querySelector("[data-atual]");
+  var elTot  = palco.querySelector("[data-total]");
+
+  /* Os separadores de familia sao <li> tambem, mas nao tem data-item — e por
+     isso que a conta de "14" sai certa mesmo com eles no meio da lista. */
+  var itens = Array.prototype.slice.call(trilho.querySelectorAll("[data-item]"));
+  if (itens.length < 2 || !quadro || !elTit) return;
+
+  var mq = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+  var semMovimento = !!(mq && mq.matches);
+
+  var DEMORA = 5200;   /* quanto tempo cada foto fica no ar */
+  var TROCA  = 1700;   /* quanto dura a bolha de vidro */
+
+  /* `pronto` segura o relogio ate o palco ter o que mostrar. Sem ele, numa
+     conexao lenta o giro automatico disparava antes da primeira textura
+     existir — e a primeira troca ja caia no plano B e desligava o efeito
+     por um atraso de rede que ia passar sozinho. */
+  var atual = 0, indo = false, relogio = null, t0 = 0;
+  var visivel = false, preparado = false, pronto = false;
+
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+  if (elTot) elTot.textContent = pad(itens.length);
+
+  /* ================= WebGL: a bolha de vidro =================
+     Um triangulo que cobre a tela inteira, duas texturas e um numero que anda
+     de 0 a 1. Dentro do circulo que cresce sai a foto NOVA, distorcida como se
+     estivesse atras de uma gota; fora dele continua a foto VELHA, intacta. */
+  var VERT =
+    "attribute vec2 aPos;varying vec2 vUv;" +
+    "void main(){vUv=aPos*0.5+0.5;gl_Position=vec4(aPos,0.0,1.0);}";
+
+  var FRAG =
+    "precision highp float;" +
+    "uniform sampler2D uT1,uT2;uniform float uProg;uniform vec2 uRes,uS1,uS2;varying vec2 vUv;" +
+    /* recorta a foto como object-fit:cover faria, pra nenhuma delas esticar */
+    "vec2 cobre(vec2 uv,vec2 ts){vec2 s=uRes/ts;float k=max(s.x,s.y);vec2 sz=ts*k;vec2 off=(uRes-sz)*0.5;return (uv*uRes-off)/sz;}" +
+    "void main(){" +
+      "vec2 uv1=cobre(vUv,uS1),uv2=cobre(vUv,uS2);" +
+      "float t=uProg*5.0;" +
+      /* 0.52 da diagonal: a bolha encosta nos cantos por volta de 90% da
+         transicao. Com o 0.85 do efeito original ela cobria tudo aos 60% e o
+         resto da animacao passava sem nada acontecendo na tela. */
+      "float raio=length(uRes)*0.52;float br=uProg*raio;" +
+      "vec2 p=vUv*uRes,c=uRes*0.5;float d=length(p-c);float nd=d/max(br,0.001);" +
+      "float dentro=smoothstep(br+2.0,br-2.0,d);" +
+      "vec2 dir=d>0.0?(p-c)/d:vec2(0.0);" +
+      /* refracao: quanto mais perto da borda da bolha, mais o pixel e puxado */
+      "float ro=0.075*pow(smoothstep(0.30,1.0,nd),1.5);" +
+      "vec2 du=uv2-dir*ro+vec2(sin(t+nd*10.0),cos(t*0.8+nd*8.0))*0.011*nd*dentro;" +
+      /* aberracao cromatica: os tres canais entram deslocados, como em vidro */
+      "float ca=0.012*pow(smoothstep(0.3,1.0,nd),1.2);" +
+      "vec4 img=vec4(texture2D(uT2,du+dir*ca*1.2).r,texture2D(uT2,du+dir*ca*0.2).g,texture2D(uT2,du-dir*ca*0.8).b,1.0);" +
+      /* o brilho fino na borda da bolha */
+      "img.rgb+=smoothstep(0.94,1.0,nd)*(1.0-smoothstep(1.0,1.02,nd))*0.10;" +
+      /* no fim, desfaz a distorcao pra foto assentar limpa */
+      "img=mix(img,texture2D(uT2,uv2),smoothstep(0.94,1.0,uProg));" +
+      "gl_FragColor=mix(texture2D(uT1,uv1),img,dentro);" +
+    "}";
+
+  var gl = null, prog = null, loc = {}, tex = [], tam = [], res = [1,1];
+
+  function compila(tipo, src){
+    var s = gl.createShader(tipo);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
+  }
+
+  function iniciaGL(){
+    if (semMovimento) return false;
+    try {
+      gl = tela.getContext("webgl", { alpha:false, antialias:false, depth:false, stencil:false })
+        || tela.getContext("experimental-webgl");
+    } catch(e){ gl = null; }
+    if (!gl) return false;
+
+    var vs = compila(gl.VERTEX_SHADER, VERT), fs = compila(gl.FRAGMENT_SHADER, FRAG);
+    if (!vs || !fs) { gl = null; return false; }
+    prog = gl.createProgram();
+    gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { gl = null; return false; }
+    gl.useProgram(prog);
+
+    var buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    /* um triangulo, nao dois: cobre a tela com metade dos vertices e sem a
+       costura diagonal no meio */
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+    var a = gl.getAttribLocation(prog, "aPos");
+    gl.enableVertexAttribArray(a);
+    gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0);
+
+    ["uT1","uT2","uProg","uRes","uS1","uS2"].forEach(function(n){
+      loc[n] = gl.getUniformLocation(prog, n);
+    });
+    gl.uniform1i(loc.uT1, 0);
+    gl.uniform1i(loc.uT2, 1);
+    /* sem isso a foto entra de cabeca pra baixo: a origem da textura em
+       OpenGL e embaixo, a de uma imagem de navegador e em cima */
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    return true;
+  }
+
+  function criaTex(img){
+    var t = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, t);
+    /* CLAMP + LINEAR sem mipmap: em WebGL 1 textura que nao e potencia de dois
+       so funciona assim, e 900x1200 nao e */
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+    return t;
+  }
+
+  var fila = {};
+  function pega(i, pronto){
+    if (tex[i]) { pronto(true); return; }
+    if (fila[i]) { fila[i].push(pronto); return; }
+    fila[i] = [pronto];
+    var im = new Image();
+    im.decoding = "async";
+    im.onload = function(){
+      if (gl) { tex[i] = criaTex(im); tam[i] = [im.naturalWidth, im.naturalHeight]; }
+      var f = fila[i]; fila[i] = null;
+      f.forEach(function(cb){ cb(!!tex[i]); });
+    };
+    im.onerror = function(){
+      var f = fila[i]; fila[i] = null;
+      f.forEach(function(cb){ cb(false); });
+    };
+    im.src = itens[i].getAttribute("data-img");
+  }
+
+  /* As 14 fotos pesam ~800 KB juntas. Elas so comecam a baixar quando a secao
+     chega perto da tela, e em fila de uma em uma, no tempo ocioso — quem nunca
+     rola ate os tratamentos nao baixa nenhuma. */
+  function enfileira(i){
+    if (i >= itens.length) return;
+    pega(i, function(){
+      if (window.requestIdleCallback) requestIdleCallback(function(){ enfileira(i+1); }, { timeout:2000 });
+      else setTimeout(function(){ enfileira(i+1); }, 300);
+    });
+  }
+
+  function ajusta(){
+    if (!gl) return;
+    var r = Math.min(window.devicePixelRatio || 1, 2);
+    var w = Math.max(1, Math.round(quadro.clientWidth * r));
+    var h = Math.max(1, Math.round(quadro.clientHeight * r));
+    if (tela.width === w && tela.height === h) return;
+    tela.width = w; tela.height = h;
+    gl.viewport(0, 0, w, h);
+    res = [w, h];
+    desenha(0, atual, atual);
+  }
+
+  function desenha(p, a, b){
+    if (!gl || !tex[a] || !tex[b]) return;
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex[a]);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, tex[b]);
+    gl.uniform1f(loc.uProg, p);
+    gl.uniform2f(loc.uRes, res[0], res[1]);
+    gl.uniform2f(loc.uS1, tam[a][0], tam[a][1]);
+    gl.uniform2f(loc.uS2, tam[b][0], tam[b][1]);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+
+  function suave(p){ return p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3)/2; }
+
+  /* ================= o texto do palco =================
+     Ele nao guarda texto proprio: copia do item da lista, que e onde o texto
+     dela esta escrito de verdade. */
+  var espera = null;
+  function ecoa(n){
+    var fam = itens[n].getAttribute("data-familia") || "";
+    var tit = itens[n].querySelector(".cat__nome").textContent.replace(/\s+/g, " ").trim();
+    if (semMovimento) { if (elFam) elFam.textContent = fam; escreve(tit, true); return; }
+    palco.classList.add("palco--sai");
+    clearTimeout(espera);
+    espera = setTimeout(function(){
+      if (elFam) elFam.textContent = fam;
+      escreve(tit, false);
+      palco.classList.remove("palco--sai");
+    }, 340);
+  }
+
+  function escreve(txt, direto){
+    elTit.classList.remove("palco__titulo--dentro");
+    elTit.textContent = "";
+    var d = 0, partes = txt.split(" ");
+    partes.forEach(function(pal, wi){
+      var w = document.createElement("span");
+      w.className = "pal";
+      pal.split("").forEach(function(ch){
+        var s = document.createElement("span");
+        s.textContent = ch;
+        s.style.transitionDelay = direto ? "0ms" : (d * 26) + "ms";
+        d++;
+        w.appendChild(s);
+      });
+      elTit.appendChild(w);
+      if (wi < partes.length - 1) elTit.appendChild(document.createTextNode(" "));
+    });
+    /* forca o navegador a calcular o estado inicial das letras recem-criadas.
+       Sem esta leitura, elas nascem e ganham a classe no mesmo quadro — e ai
+       nao ha "de onde" pra transicao sair, e o titulo simplesmente aparece. */
+    void elTit.offsetWidth;
+    elTit.classList.add("palco__titulo--dentro");
+  }
+
+  /* ================= a lista ================= */
+  function centraliza(li){
+    var alvo = li.offsetLeft - (trilho.clientWidth - li.offsetWidth) / 2;
+    if (trilho.scrollTo) trilho.scrollTo({ left: alvo, behavior: semMovimento ? "auto" : "smooth" });
+    else trilho.scrollLeft = alvo;
+  }
+
+  function marca(n){
+    itens.forEach(function(li, i){
+      li.setAttribute("aria-current", i === n ? "true" : "false");
+      var f = li.querySelector(".cat__linha i");
+      if (f) { f.style.transition = "width .2s ease-out, opacity .3s ease"; f.style.width = "0%"; }
+    });
+    if (elAt) elAt.textContent = pad(n + 1);
+    foto.alt = itens[n].getAttribute("data-alt") || "";
+    ecoa(n);
+    centraliza(itens[n]);
+  }
+
+  function paraRelogio(){
+    if (relogio) { cancelAnimationFrame(relogio); relogio = null; }
+    t0 = 0;
+  }
+
+  function ligaRelogio(){
+    paraRelogio();
+    if (semMovimento || !visivel || indo || !pronto) return;
+    var f = itens[atual].querySelector(".cat__linha i");
+    if (f) f.style.transition = "width .1s linear, opacity .3s ease";
+    relogio = requestAnimationFrame(function tic(t){
+      if (!t0) t0 = t;
+      var p = Math.min((t - t0) / DEMORA, 1);
+      if (f) f.style.width = (p * 100) + "%";
+      if (p < 1) { relogio = requestAnimationFrame(tic); }
+      else { relogio = null; vai(atual + 1); }
+    });
+  }
+
+  /* ================= a troca ================= */
+  function fade(n){
+    /* saida de emergencia: sem WebGL, ou quando a foto nova nao carregou.
+       Volta pro <img> e troca em dissolucao. */
+    palco.classList.remove("palco--gl");
+    palco.classList.add("palco--trocando");
+    setTimeout(function(){
+      foto.src = itens[n].getAttribute("data-img");
+      palco.classList.remove("palco--trocando");
+      indo = false;
+      if (visivel) ligaRelogio();
+    }, semMovimento ? 0 : 300);
+  }
+
+  function vai(n){
+    n = (n + itens.length) % itens.length;
+    if (indo || n === atual) return;
+    var de = atual;
+    indo = true;
+    paraRelogio();
+    marca(n);
+    atual = n;
+
+    if (!gl) { fade(n); return; }
+
+    pega(n, function(ok){
+      /* foto que nao carrega desliga o efeito de vez: desenhar num canvas que
+         acabou de ser escondido deixaria o palco congelado na foto anterior. */
+      if (!ok || !tex[de]) { gl = null; fade(n); return; }
+      var ini = 0;
+      requestAnimationFrame(function passo(t){
+        if (!ini) ini = t;
+        var p = Math.min((t - ini) / TROCA, 1);
+        desenha(suave(p), de, n);
+        if (p < 1) { requestAnimationFrame(passo); return; }
+        /* assenta: as duas texturas viram a nova e o progresso volta a zero,
+           senao o proximo quadro estatico ainda carregaria a bolha */
+        desenha(0, n, n);
+        indo = false;
+        if (visivel) ligaRelogio();
+      });
+    });
+  }
+
+  /* ================= ligacoes ================= */
+  itens.forEach(function(li, i){
+    var b = li.querySelector(".cat__btn");
+    if (b) b.addEventListener("click", function(){ paraRelogio(); vai(i); });
+    li.setAttribute("aria-current", i === 0 ? "true" : "false");
+  });
+
+  var ant = palco.querySelector("[data-ant]"), prox = palco.querySelector("[data-prox]");
+  if (ant)  ant.addEventListener("click",  function(){ paraRelogio(); vai(atual - 1); });
+  if (prox) prox.addEventListener("click", function(){ paraRelogio(); vai(atual + 1); });
+
+  /* ⚠️ O PAUSAR FICA SO NA LISTA, nao no palco inteiro. Mesma armadilha que
+     foi corrigida no carrossel da Realce: quem rola de mouse deixa o cursor
+     parado em cima da area grande, o giro automatico nunca acontece e parece
+     defeito. A lista e onde a pessoa esta LENDO — ali pausar faz sentido. */
+  trilho.addEventListener("mouseenter", paraRelogio);
+  trilho.addEventListener("mouseleave", function(){ if (!indo) ligaRelogio(); });
+  palco.addEventListener("focusin", paraRelogio);
+  trilho.addEventListener("focusin", paraRelogio);
+  document.addEventListener("visibilitychange", function(){
+    if (document.hidden) paraRelogio(); else if (visivel && !indo) ligaRelogio();
+  });
+
+  /* arrastar o dedo em cima da foto */
+  var x0 = null, y0 = null;
+  quadro.addEventListener("touchstart", function(e){
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+  }, { passive:true });
+  quadro.addEventListener("touchend", function(e){
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) { paraRelogio(); vai(atual + (dx < 0 ? 1 : -1)); }
+    x0 = y0 = null;
+  }, { passive:true });
+
+  var espera2 = null;
+  window.addEventListener("resize", function(){
+    clearTimeout(espera2);
+    espera2 = setTimeout(function(){ ajusta(); if (!indo) desenha(0, atual, atual); }, 150);
+  });
+
+  function libera(){ pronto = true; if (visivel && !indo) ligaRelogio(); }
+
+  function prepara(){
+    if (preparado) return;
+    preparado = true;
+    if (!iniciaGL()) { libera(); return; }   /* segue no <img>, em fade */
+    ajusta();
+    pega(0, function(ok){
+      if (!ok) { gl = null; libera(); return; }  /* fica o <img>, que ja mostra a foto 1 */
+      ajusta();
+      desenha(0, 0, 0);
+      palco.classList.add("palco--gl");
+      libera();
+      enfileira(1);
+    });
+  }
+
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function(is){
+      is.forEach(function(e){
+        visivel = e.isIntersecting;
+        if (visivel) { prepara(); if (!indo) ligaRelogio(); }
+        else paraRelogio();
+      });
+    }, { threshold: 0.25 }).observe(quadro);
+  } else {
+    visivel = true; prepara(); ligaRelogio();
+  }
+})();
+</script>
+
+<!-- Dados estruturados: e o que faz o Google mostrar endereco, telefone e
+     categoria direto na busca.
+
+     De proposito NAO ha aggregateRating aqui: a nota de 5,0 e das avaliacoes do
+     Google, e marcar avaliacao de terceiro como se fosse do site e contra a
+     diretriz do proprio Google. O numero aparece na pagina, escrito, com a
+     fonte dita — isso e honesto e nao arrisca penalizacao. -->
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"HealthAndBeautyBusiness",
+  "name":"Larissa Martins Estética Avançada",
+  "description":"Estética avançada em Itabira/MG com Larissa Martins, fisioterapeuta pós-graduada em dermatofuncional. Harmonização facial e corporal, botox, bioestimulador de colágeno, tratamentos de pele e spa day.",
+  "image":"assets/img/logo-coral.webp",
+  "telephone":"+55 31 98461-7272",
+  "email":"lamartinsestetica@gmail.com",
+  "address":{
+    "@type":"PostalAddress",
+    "streetAddress":"Rua Demerval Camilo de Oliveira Lage, 130",
+    "addressLocality":"Itabira",
+    "addressRegion":"MG",
+    "postalCode":"35900-406",
+    "addressCountry":"BR"
+  },
+  "sameAs":["https://instagram.com/dralarissamartinst"],
+  "openingHoursSpecification":[
+    {"@type":"OpeningHoursSpecification",
+     "dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],
+     "opens":"09:00","closes":"19:00"},
+    {"@type":"OpeningHoursSpecification",
+     "dayOfWeek":"Saturday","opens":"09:00","closes":"13:00"}
+  ],
+  "paymentAccepted":"Pix, cartão de crédito, cartão de débito, pagamento por aproximação",
+  "currenciesAccepted":"BRL",
+  "makesOffer":[
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Harmonização facial"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Botox"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Bioestimulador de colágeno"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Hidra Gloss"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Limpeza de pele"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Tratamentos faciais"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Harmonização corporal"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Harmonização de glúteo"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Tratamento para gordura localizada"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Drenagem linfática e massagem modeladora"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Massagem relaxante"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Spa day"}},
+    {"@type":"Offer","itemOffered":{"@type":"Service","name":"Consulta estética"}}
+  ]
+}
+</script>
+
+</body>
+</html>
