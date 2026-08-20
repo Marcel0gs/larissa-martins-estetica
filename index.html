@@ -483,18 +483,36 @@ h3{font-size:1.15rem}
 }
 /* ⚠️ O TEXTO FICA EMBAIXO DA FOTO. Ver o comentario no HTML — a versao com o
    titulo sobreposto foi vista e reprovada pelo usuario em 20/08/2026.
-   ⚠️ A ALTURA MINIMA FICA NO BLOCO INTEIRO, nao em cada linha. Ela existe pra
-   lista de baixo nao subir e descer a cada troca (solavanco e o defeito que
-   mais se nota em carrossel) — mas presa no titulo ela abria um buraco entre
-   titulo e descricao toda vez que o titulo cabia em uma linha so. No bloco, o
-   titulo de duas linhas e a descricao de duas linhas se compensam. */
+   ⚠️ A ALTURA E MEDIDA, NAO CHUTADA — E ELA DESLIZA. Antes havia um
+   `min-height:11rem` fixo aqui, pra lista de baixo nao subir e descer a cada
+   troca (solavanco e o defeito que mais se nota em carrossel). So que 11rem e
+   o pior caso: quando o tratamento da vez tem titulo de uma linha e descricao
+   curta, sobrava um buraco de quase 100px entre a descricao e a lista. O
+   usuario circulou esse buraco num print em 20/08/2026.
+
+   O que entrou no lugar: o script MEDE a altura do texto de cada tratamento
+   numa copia invisivel do bloco (`.palco__sonda`) e escreve a altura exata em
+   px, com transicao. A promessa de "nao dar solavanco" continua de pe — a
+   lista nao PULA, ela desliza em 0,42s. Crescer comeca junto com o apagar do
+   texto; encolher espera o texto velho sumir (o porque esta no script). Sem JS
+   o bloco fica na altura natural do primeiro tratamento, que e o unico que
+   existe sem script. */
 .palco__texto{
   max-width:44rem;margin:clamp(1.5rem,3.5vw,2.1rem) auto 0;
-  min-height:11rem;
   text-align:center;
-  transition:opacity .35s ease,transform .35s ease;
+  transition:height .42s cubic-bezier(.22,.7,.2,1),opacity .35s ease,transform .35s ease;
 }
 .palco--sai .palco__texto{opacity:0;transform:translateY(-10px)}
+/* A sonda: a mesma caixa, com a mesma largura e a mesma tipografia, fora do
+   fluxo e invisivel. O script escreve nela o texto de um tratamento, le a
+   altura e apaga. `visibility:hidden` e nao `display:none` de proposito —
+   caixa com display:none nao tem altura pra medir. */
+.palco{position:relative}
+.palco__sonda{
+  position:absolute;left:0;right:0;top:0;
+  margin-top:0;height:auto;transition:none;
+  visibility:hidden;pointer-events:none;
+}
 .palco__familia{
   display:block;margin-bottom:.55rem;
   font-size:.68rem;font-weight:700;letter-spacing:.22em;
@@ -544,7 +562,11 @@ h3{font-size:1.15rem}
 .palco__seta--prox{right:clamp(.6rem,2.5vw,1rem)}
 
 /* ---------- a lista de catalogo, embaixo do palco ---------- */
-.catalogo{position:relative;margin-top:clamp(1.8rem,4vw,2.6rem)}
+/* ⚠️ A distancia ate a lista foi encurtada em 20/08/2026, junto com a altura
+   medida do bloco de texto. Antes eram 1,8rem no celular e, somados ao buraco
+   que o `min-height` fixo abria, davam ~135px de nada entre a descricao e o
+   primeiro titulo. */
+.catalogo{position:relative;margin-top:clamp(1.15rem,3vw,2.4rem)}
 /* A lista SANGRA ate a borda da tela de proposito, cortada no meio de um item.
    Item cortado e o que diz "tem mais pro lado". Lista que termina certinha na
    margem parece lista que acabou ali — e ai ninguem arrasta.
@@ -655,13 +677,15 @@ h3{font-size:1.15rem}
 }
 .lema p{margin:0}
 /* ====================== o espaco ======================
-   ⚠️ ERA 3 COLUNAS COM A PRIMEIRA FOTO OCUPANDO DUAS EM PROPORCAO LIVRE.
-   Fazia sentido quando havia 3 fotos e a foto larga da sala era a melhor
-   coisa da pagina. Deixou de fazer em 20/08/2026, por duas razoes juntas:
-   a foto da sala virou o HERO (nao precisa de palco duas vezes), e entrou
-   uma quarta foto, a do spa day. Com 4 fotos, um 2x2 fecha certinho e sem
-   buraco — a primeira em proporcao livre abria ~300px de vazio ao lado da
-   segunda, e a terceira coluna da segunda linha ficava vazia. */
+   ⚠️ JA FOI 3 COLUNAS, DEPOIS 2x2 COM QUATRO FOTOS, E AGORA E 1 LARGA + 2.
+   A mudanca de 20/08/2026 nao foi de gosto: o usuario viu que a terceira foto
+   (a maca, luz fria) era **o mesmo angulo do mesmo comodo** da segunda, e
+   pediu pra trocar. So que, no material que existe, NAO HA outra foto da sala
+   de Itabira — as unicas tres sao essas, e duas delas sao a mesma cena. Entao
+   a repetida saiu e a boa cresceu pra linha inteira, em 16/9.
+   ⚠️ QUANDO ELA MANDAR FOTO NOVA DO ESPACO (pergunta 11 do CLAUDE.md), o
+   quarto lugar volta: basta acrescentar um <figure> — o 2x2 se refaz sozinho,
+   porque so a PRIMEIRA foto tem tratamento especial. */
 .galeria{display:grid;gap:.9rem;grid-template-columns:repeat(2,1fr)}
 /* aspect-ratio + object-fit resolve fotos de proporcoes diferentes na mesma
    linha: sem isso, cada linha fica na altura da foto mais alta e as menores
@@ -670,6 +694,11 @@ h3{font-size:1.15rem}
   margin:0;border-radius:var(--raio);overflow:hidden;
   background:var(--creme-esc);aspect-ratio:4/3;
 }
+/* A primeira ocupa a linha toda. 16/9 e nao 4/3 porque, esticada em duas
+   colunas, a 4/3 daria ~870px de altura no desktop e a secao viraria so ela.
+   O recorte 16/9 dessa foto perde as luminarias do teto e mantem o que
+   importa: a parede de certificados, a maca e a poltrona coral. */
+.galeria figure:first-child{grid-column:1 / -1;aspect-ratio:16/9}
 .galeria img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
 .galeria figure:hover img{transform:scale(1.04)}
 
@@ -992,13 +1021,25 @@ h3{font-size:1.15rem}
 
 <!-- ===== tratamentos =====
      ⚠️ AGRUPADO POR QUEIXA, NAO POR TECNICA — ver o comentario no CSS.
-     ✅ AS DESCRICOES SAO AS DELA, LITERAIS. O usuario mandou o catalogo inteiro
-     sem truncar em 20/08/2026, e o texto de cada item saiu de la. So dois
-     ajustes de digitacao foram feitos: "aromoterapia" -> "aromaterapia" e
-     "que tanto de incomoda" -> "que tanto te incomoda".
-     ⚠️ NAO reescrever esses textos em linguagem de agencia. O valor deles e
-     serem dela. E **nao ha preco em lugar nenhum**: no catalogo dela os 13
-     servicos estao com R$ 0,00, entao nao ha preco pra vazar pro site.
+     ⚠️ AS DESCRICOES FORAM REESCRITAS EM 20/08/2026, A PEDIDO DO USUARIO.
+     Ate entao eram o texto literal do catalogo do WhatsApp Business dela — e
+     havia uma regra aqui dizendo pra nao mexer. O usuario leu e discordou:
+     *"acho alguns textos do catalogo dela meio amador"*. A decisao e dele e
+     esta tomada.
+     O QUE A REESCRITA RESPEITA, e isso nao pode se perder:
+       - **nenhum procedimento novo foi inventado.** Cada item continua sendo o
+         que ela anuncia, com o mesmo significado
+       - **sairam as duas promessas de resultado** que os textos dela traziam:
+         "vai te deixar linda" (harmonizacao facial) e "acabar de vez com
+         aquela gordurinha" (gordura localizada). Em publicidade de
+         fisioterapeuta isso e risco de conselho, nao so questao de estilo
+       - **nada que a gente nao saiba entrou.** Os tres tipos de limpeza de
+         pele continuam sem diferenca descrita, porque ate hoje ninguem
+         perguntou a ela qual e (pergunta 6 do CLAUDE.md)
+     ⚠️ O TEXTO ORIGINAL DELA ESTA EM `empresa.md`, item por item. Se ela ler o
+     site e preferir as palavras dela, e so voltar de la.
+     ✅ **Nao ha preco em lugar nenhum**: no catalogo dela os 13 servicos estao
+     com R$ 0,00, entao nao ha preco pra vazar pro site.
 
      ⚠️ A LISTA E A FONTE DA VERDADE, o palco e o eco. Titulo e descricao vivem
      aqui, escritos no HTML. O que o palco mostra em cima da foto ele copia
@@ -1012,8 +1053,8 @@ h3{font-size:1.15rem}
   <div class="env">
     <div class="cabeca">
       <span class="olho">Tratamentos</span>
-      <h2>O que dá para resolver aqui</h2>
-      <p class="chamada">Rosto, pele e corpo no mesmo lugar. Abaixo estão agrupados pelo que você quer mudar — o procedimento certo sai da avaliação.</p>
+      <h2>Comece pelo que te incomoda</h2>
+      <p class="chamada">Rosto, pele e corpo no mesmo lugar. A lista abaixo está agrupada por queixa — qual procedimento entra, e em que ordem, sai da avaliação.</p>
     </div>
 
     <div class="palco" data-palco>
@@ -1044,7 +1085,11 @@ h3{font-size:1.15rem}
       <div class="palco__texto" aria-hidden="true">
         <span class="palco__familia" data-familia>Antes de tudo</span>
         <p class="palco__titulo" data-titulo>Consulta estética</p>
-        <p class="palco__desc" data-desc>É super importante antes de qualquer tratamento fazer uma consulta, nela iremos analisar tudo e planejar o melhor tratamento pra você.</p>
+        <!-- ⚠️ ESTE TEXTO E COPIA DO PRIMEIRO ITEM DA LISTA, e tem que continuar
+             identico a ele: e o que aparece no primeiro quadro da pagina e o
+             que fica se o JS nao rodar. Mexeu na descricao da Consulta
+             estetica la embaixo, mexe aqui junto. -->
+        <p class="palco__desc" data-desc>O ponto de partida de qualquer tratamento. É na consulta que se avalia a pele, a estrutura do rosto e o que você quer mudar — e é dela que sai o plano.</p>
       </div>
     </div>
 
@@ -1064,7 +1109,7 @@ h3{font-size:1.15rem}
             data-alt="Prancheta com o papel timbrado de Larissa Martins, estetoscópio e adipômetro sobre a bancada da sala de consulta.">
           <span class="cat__linha" aria-hidden="true"><i></i></span>
           <h3 class="cat__nome"><button class="cat__btn" type="button">Consulta estética</button></h3>
-          <p class="cat__desc">É super importante antes de qualquer tratamento fazer uma consulta, nela iremos analisar tudo e planejar o melhor tratamento pra você.</p>
+          <p class="cat__desc">O ponto de partida de qualquer tratamento. É na consulta que se avalia a pele, a estrutura do rosto e o que você quer mudar — e é dela que sai o plano.</p>
         </li>
 
         <li class="cat cat--marca" aria-hidden="true">
@@ -1077,7 +1122,7 @@ h3{font-size:1.15rem}
             data-alt="Larissa Martins aplicando preenchimento no rosto de uma paciente com faixa de cabelo, na clínica em Itabira.">
           <span class="cat__linha" aria-hidden="true"><i></i></span>
           <h3 class="cat__nome"><button class="cat__btn" type="button">Harmonização facial</button></h3>
-          <p class="cat__desc">Trabalhamos com técnica de reestruturação facial que vai te deixar linda de forma natural.</p>
+          <p class="cat__desc">Técnica de reestruturação facial, aplicada ponto a ponto e na medida do seu rosto. O caminho é o traço natural, nunca o excesso.</p>
         </li>
         <li class="cat" data-item
             data-familia="Para o rosto"
@@ -1085,7 +1130,7 @@ h3{font-size:1.15rem}
             data-alt="Larissa Martins aplicando produto no rosto de uma paciente deitada na maca.">
           <span class="cat__linha" aria-hidden="true"><i></i></span>
           <h3 class="cat__nome"><button class="cat__btn" type="button">Botox</button></h3>
-          <p class="cat__desc">Tratamento para amenizar a força muscular, prevenindo rugas.</p>
+          <p class="cat__desc">Reduz a força da musculatura que marca as linhas de expressão — e é isso que ajuda a evitar que elas se aprofundem.</p>
         </li>
         <li class="cat" data-item
             data-familia="Para o rosto"
@@ -1093,7 +1138,7 @@ h3{font-size:1.15rem}
             data-alt="Paciente com touca deitada na maca durante um procedimento facial.">
           <span class="cat__linha" aria-hidden="true"><i></i></span>
           <h3 class="cat__nome"><button class="cat__btn" type="button">Bioestimulador de colágeno</button></h3>
-          <p class="cat__desc">Tratamento para melhorar a qualidade de pele.</p>
+          <p class="cat__desc">Estimula a produção do seu próprio colágeno. É trabalho de qualidade de pele, feito em sessões, com efeito gradual.</p>
         </li>
         <li class="cat" data-item
             data-familia="Para o rosto"
@@ -1101,7 +1146,7 @@ h3{font-size:1.15rem}
             data-alt="Close da aplicação de hidratação nos lábios de uma paciente.">
           <span class="cat__linha" aria-hidden="true"><i></i></span>
           <h3 class="cat__nome"><button class="cat__btn" type="button">Hidra Gloss</button></h3>
-          <p class="cat__desc">Técnica para hidratação dos lábios. Ajuda a hidratar profundamente, proporcionando lábios lindos e hidratados.</p>
+          <p class="cat__desc">Hidratação profunda dos lábios, feita em consultório. O foco é maciez e brilho.</p>
         </li>
 
         <li class="cat cat--marca" aria-hidden="true">
@@ -1114,7 +1159,7 @@ h3{font-size:1.15rem}
             data-alt="Larissa Martins fazendo limpeza de pele em uma paciente deitada na maca.">
           <span class="cat__linha" aria-hidden="true"><i></i></span>
           <h3 class="cat__nome"><button class="cat__btn" type="button">Limpeza de pele</button></h3>
-          <p class="cat__desc">Temos na clínica três tipos de limpeza de pele: Ouro, Prata e Bronze.</p>
+          <p class="cat__desc">São três protocolos — Ouro, Prata e Bronze. Qual deles entra depende do que a sua pele pede.</p>
         </li>
         <li class="cat" data-item
             data-familia="Para a pele"
@@ -1122,7 +1167,7 @@ h3{font-size:1.15rem}
             data-alt="Aplicação de um creme facial no rosto de uma paciente durante o tratamento.">
           <span class="cat__linha" aria-hidden="true"><i></i></span>
           <h3 class="cat__nome"><button class="cat__btn" type="button">Tratamentos faciais</button></h3>
-          <p class="cat__desc">Temos tratamentos antioxidantes e clareadores.</p>
+          <p class="cat__desc">Protocolos antioxidantes, para o viço, e clareadores, para as manchas.</p>
         </li>
 
         <li class="cat cat--marca" aria-hidden="true">
@@ -1135,7 +1180,7 @@ h3{font-size:1.15rem}
             data-alt="Larissa Martins aplicando um procedimento corporal em uma paciente.">
           <span class="cat__linha" aria-hidden="true"><i></i></span>
           <h3 class="cat__nome"><button class="cat__btn" type="button">Harmonização corporal</button></h3>
-          <p class="cat__desc">Tratamento para te ajudar a alcançar a sua melhor versão.</p>
+          <p class="cat__desc">Trabalha o contorno do corpo como um conjunto, e não um ponto isolado. O que entra no protocolo sai da avaliação.</p>
         </li>
         <!-- ⚠️ A harmonizacao de gluteo NAO esta no catalogo dela, mas o usuario
              confirmou em 20/08/2026 que ela AINDA FAZ. Ela ja anuncia isso
@@ -1160,7 +1205,7 @@ h3{font-size:1.15rem}
             data-alt="Larissa Martins aplicando um aparelho na região abdominal de uma paciente.">
           <span class="cat__linha" aria-hidden="true"><i></i></span>
           <h3 class="cat__nome"><button class="cat__btn" type="button">Gordura localizada</button></h3>
-          <p class="cat__desc">Temos tratamentos para acabar de vez com aquela gordurinha que tanto te incomoda.</p>
+          <p class="cat__desc">Para a gordura que insiste em ficar num ponto só, mesmo com a rotina em dia. Quantas sessões, e quais, depende do seu caso.</p>
         </li>
         <li class="cat" data-item
             data-familia="Para o corpo"
@@ -1181,7 +1226,7 @@ h3{font-size:1.15rem}
             data-alt="Toalhas enroladas e uma vela acesa sobre a bancada de mármore da sala de massagem.">
           <span class="cat__linha" aria-hidden="true"><i></i></span>
           <h3 class="cat__nome"><button class="cat__btn" type="button">Massagem relaxante</button></h3>
-          <p class="cat__desc">Feita no corpo todo, em ambiente aconchegante à luz de velas, com som ambiente e aroma relaxante.</p>
+          <p class="cat__desc">No corpo todo, em sala reservada, à luz de velas, com som ambiente e aroma relaxante.</p>
         </li>
         <li class="cat" data-item
             data-familia="Para relaxar"
@@ -1189,7 +1234,7 @@ h3{font-size:1.15rem}
             data-alt="Bandeja de spa com vela acesa, óleos essenciais e pétalas de rosa sobre a cama.">
           <span class="cat__linha" aria-hidden="true"><i></i></span>
           <h3 class="cat__nome"><button class="cat__btn" type="button">Spa day</button></h3>
-          <p class="cat__desc">Inclui a massagem relaxante com óleos essenciais, aromaterapia, cromoterapia e musicoterapia, mais hidratação facial.</p>
+          <p class="cat__desc">Massagem relaxante com óleos essenciais, aromaterapia, cromoterapia e musicoterapia, mais hidratação facial.</p>
         </li>
         <li class="cat" data-item
             data-familia="Para relaxar"
@@ -1197,7 +1242,7 @@ h3{font-size:1.15rem}
             data-alt="Espumante no balde de gelo, chocolates, flores e cartão personalizado preparados para a experiência premium.">
           <span class="cat__linha" aria-hidden="true"><i></i></span>
           <h3 class="cat__nome"><button class="cat__btn" type="button">Spa day + experiência premium</button></h3>
-          <p class="cat__desc">Tudo o que o spa day tem, mais espumante, chocolates, flores e um cartão personalizado.</p>
+          <p class="cat__desc">Tudo do spa day, mais espumante, chocolates, flores e um cartão personalizado.</p>
         </li>
 
       </ol>
@@ -1266,9 +1311,17 @@ h3{font-size:1.15rem}
      da prova social: mostra "varios cursos de atualizacao" sem escrever uma
      palavra. Ela aparece em duas das quatro fotos. Se um dia vier uma foto
      frontal so da parede, ela entra aqui.
-     ⚠️ AS DUAS FOTOS DO MEIO (certificados e maca) SAO DE CELULAR, com luz
-     fria, e agora destoam — a do topo e a do spa day sao muito melhores.
-     Trocar assim que ela mandar fotos novas do espaco. -->
+     ⚠️ ERAM QUATRO FOTOS E VIRARAM TRES em 20/08/2026 — a da maca saiu por ser
+     o mesmo angulo da dos certificados. O porque de nao ter entrado outra no
+     lugar esta no comentario do CSS: nao existe outra foto da sala.
+     ⚠️ A DOS CERTIFICADOS E DE CELULAR, com luz fria, e destoa da do topo.
+     Trocar assim que ela mandar fotos novas do espaco.
+     ⚠️ E A DO SPA DAY PRECISA DE CONFIRMACAO. A anotacao antiga dizia que a
+     poltrona rose do fundo era a MESMA da foto do topo — olhando as duas lado
+     a lado, nao e: no topo e um sofa coral de dois lugares, aqui e uma
+     poltrona rosa isolada, e a parede nao tem o marmore da sala. As fotos de
+     spa day da pasta parecem todas de OUTRO ambiente. Perguntar a ela antes de
+     considerar esta secao fechada. -->
 <section class="secao" id="espaco">
   <div class="env">
     <div class="cabeca">
@@ -1279,15 +1332,11 @@ h3{font-size:1.15rem}
     <div class="galeria">
       <figure>
         <img src="assets/img/sala-ampla.webp" width="1880" height="1880" loading="lazy" decoding="async"
-             alt="Sala de atendimento vista por inteiro, com maca, poltrona rosa, luminárias pendentes e a parede de certificados">
+             alt="Sala de atendimento com a maca preparada, a bancada de mármore ao fundo, a parede de certificados à esquerda e a poltrona coral à direita">
       </figure>
       <figure>
         <img src="assets/img/sala-certificados.webp" width="1200" height="1266" loading="lazy" decoding="async"
              alt="Bancada de mármore com armários, orquídea e a parede de certificados emoldurados ao lado da maca">
-      </figure>
-      <figure>
-        <img src="assets/img/sala-maca.webp" width="1100" height="1375" loading="lazy" decoding="async"
-             alt="Maca preparada com toalhas, diante da bancada de mármore da sala de atendimento">
       </figure>
       <!-- O spa day montado, na propria sala: a poltrona rose do fundo e a
            MESMA da foto do topo, o que amarra a galeria com o hero. Entrou em
@@ -1455,7 +1504,7 @@ h3{font-size:1.15rem}
           </li>
           <li>
             <svg class="i" aria-hidden="true"><use href="#i-check"/></svg>
-            <span><b>No local</b>Wi-Fi liberado para quem está em atendimento</span>
+            <span><b>No local</b>Wi-Fi liberado</span>
           </li>
         </ul>
         <div class="acoes">
@@ -1689,6 +1738,7 @@ h3{font-size:1.15rem}
   var quadro = palco.querySelector(".palco__quadro");
   var foto   = palco.querySelector("[data-foto]");
   var tela   = palco.querySelector("[data-tela]");
+  var elTexto = palco.querySelector(".palco__texto");
   var elFam  = palco.querySelector("[data-familia]");
   var elTit  = palco.querySelector("[data-titulo]");
   var elDesc = palco.querySelector("[data-desc]");
@@ -1704,7 +1754,11 @@ h3{font-size:1.15rem}
   var semMovimento = !!(mq && mq.matches);
 
   var DEMORA = 5200;   /* quanto tempo cada foto fica no ar */
-  var TROCA  = 1700;   /* quanto dura a bolha de vidro */
+  /* ⚠️ 1900 e nao 1700 por causa do assentar. A bolha agora cobre a foto aos
+     ~83% e o que sobra e o liquido acalmando; nos 1700 antigos esse assentar
+     roubaria tempo do crescimento e a bolha passaria correndo. Os ~200ms a
+     mais devolvem ao crescimento o ritmo que o usuario aprovou. */
+  var TROCA  = 1900;   /* quanto dura a bolha de vidro */
 
   /* `pronto` segura o relogio ate o palco ter o que mostrar. Sem ele, numa
      conexao lenta o giro automatico disparava antes da primeira textura
@@ -1732,23 +1786,43 @@ h3{font-size:1.15rem}
     "void main(){" +
       "vec2 uv1=cobre(vUv,uS1),uv2=cobre(vUv,uS2);" +
       "float t=uProg*5.0;" +
-      /* 0.52 da diagonal: a bolha encosta nos cantos por volta de 90% da
-         transicao. Com o 0.85 do efeito original ela cobria tudo aos 60% e o
-         resto da animacao passava sem nada acontecendo na tela. */
-      "float raio=length(uRes)*0.52;float br=uProg*raio;" +
+      /* ⚠️ 0.60 DA DIAGONAL, E ISSO E O CONSERTO DO FINAL. Em 0.52 a borda da
+         bolha — que e justamente onde mora TODA a distorcao — so saia pelos
+         cantos aos 96% da transicao. Ou seja: o anel de maxima refracao,
+         aberracao e brilho ficava colado na moldura da foto ate o ultimo
+         instante e ai desaparecia de uma vez. Era o "vai de uma vez" que o
+         usuario viu no video de 20/08/2026.
+         Em 0.60 a bolha cobre a foto inteira por volta dos 83%, e o resto da
+         animacao deixa de ser "bolha ainda passando" pra ser o liquido
+         ASSENTANDO — que e a parte que faltava. */
+      "float raio=length(uRes)*0.60;float br=uProg*raio;" +
       "vec2 p=vUv*uRes,c=uRes*0.5;float d=length(p-c);float nd=d/max(br,0.001);" +
-      "float dentro=smoothstep(br+2.0,br-2.0,d);" +
+      /* ⚠️ `calma` e a outra metade do conserto: a amplitude da distorcao
+         inteira cai sozinha ate zero no fim. Antes a distorcao ficava no
+         maximo e era APAGADA por uma dissolucao (o mix de 0.94 a 1.0) — e
+         dissolver uma imagem torta pra imagem certa nao le como "assentar",
+         le como corte. Aqui a torcao afrouxa de verdade, e o smoothstep
+         garante que ela chega em zero com velocidade zero: nao ha ultimo
+         quadro em que algo ainda estava acontecendo. */
+      "float calma=1.0-smoothstep(0.55,1.0,uProg);" +
+      /* a fronteira entre foto velha e nova comeca dura (2px) e vai virando um
+         degrade largo. Assim o ultimo pedaco de foto velha, la no canto, se
+         dissolve em vez de ser cortado por uma linha. */
+      "float borda=2.0+uRes.y*0.03*smoothstep(0.55,1.0,uProg);" +
+      "float dentro=smoothstep(br+borda,br-borda,d);" +
       "vec2 dir=d>0.0?(p-c)/d:vec2(0.0);" +
       /* refracao: quanto mais perto da borda da bolha, mais o pixel e puxado */
-      "float ro=0.075*pow(smoothstep(0.30,1.0,nd),1.5);" +
-      "vec2 du=uv2-dir*ro+vec2(sin(t+nd*10.0),cos(t*0.8+nd*8.0))*0.011*nd*dentro;" +
+      "float ro=0.075*pow(smoothstep(0.30,1.0,nd),1.5)*calma;" +
+      "vec2 du=uv2-dir*ro+vec2(sin(t+nd*10.0),cos(t*0.8+nd*8.0))*0.011*nd*dentro*calma;" +
       /* aberracao cromatica: os tres canais entram deslocados, como em vidro */
-      "float ca=0.012*pow(smoothstep(0.3,1.0,nd),1.2);" +
+      "float ca=0.012*pow(smoothstep(0.3,1.0,nd),1.2)*calma;" +
       "vec4 img=vec4(texture2D(uT2,du+dir*ca*1.2).r,texture2D(uT2,du+dir*ca*0.2).g,texture2D(uT2,du-dir*ca*0.8).b,1.0);" +
-      /* o brilho fino na borda da bolha */
-      "img.rgb+=smoothstep(0.94,1.0,nd)*(1.0-smoothstep(1.0,1.02,nd))*0.10;" +
-      /* no fim, desfaz a distorcao pra foto assentar limpa */
-      "img=mix(img,texture2D(uT2,uv2),smoothstep(0.94,1.0,uProg));" +
+      /* o brilho fino na borda da bolha — tambem apaga junto, senao seria um
+         risco colorido aceso na moldura bem na hora de assentar */
+      "img.rgb+=smoothstep(0.94,1.0,nd)*(1.0-smoothstep(1.0,1.02,nd))*0.10*calma;" +
+      /* rede de seguranca: mesmo com `calma` ja perto de zero, o ultimo quadro
+         tem que ser a foto limpa ao pixel. */
+      "img=mix(img,texture2D(uT2,uv2),smoothstep(0.88,1.0,uProg));" +
       "gl_FragColor=mix(texture2D(uT1,uv1),img,dentro);" +
     "}";
 
@@ -1868,18 +1942,78 @@ h3{font-size:1.15rem}
      Ele nao guarda texto proprio: copia do item da lista, que e onde o texto
      dela esta escrito de verdade. */
   var espera = null;
+  var eco = { fam:"", tit:"", des:"" };
   function ecoa(n){
     var fam = itens[n].getAttribute("data-familia") || "";
     var tit = texto(itens[n], ".cat__nome");
     var des = texto(itens[n], ".cat__desc");
-    if (semMovimento) { copia(fam, des); escreve(tit, true); return; }
+    eco = { fam:fam, tit:tit, des:des };
+    var alvo = mede(fam, tit, des);
+    if (semMovimento) { aplica(alvo, true); copia(fam, des); escreve(tit, true); return; }
+    /* ⚠️ CRESCE ANTES, ENCOLHE DEPOIS. Crescer no comeco nao atropela nada: a
+       caixa abre e a lista desce. Encolher no comeco atropelaria — o texto
+       velho ainda esta na tela apagando, e a ultima linha dele pingaria por
+       cima dos titulos da lista. Entao o encolher espera o texto velho sumir. */
+    var agora = elTexto ? elTexto.getBoundingClientRect().height : 0;
+    if (alvo >= agora) aplica(alvo, false);
     palco.classList.add("palco--sai");
     clearTimeout(espera);
     espera = setTimeout(function(){
       copia(fam, des);
       escreve(tit, false);
+      if (alvo < agora) aplica(alvo, false);
       palco.classList.remove("palco--sai");
     }, 340);
+  }
+
+  /* ================= a altura do bloco de texto =================
+     ⚠️ POR QUE MEDIR EM VEZ DE FIXAR. Ver o comentario no CSS: a altura fixa
+     de 11rem era o pior caso dos 14 tratamentos, e nos textos curtos sobrava
+     um buraco entre a descricao e a lista. Aqui a altura de cada um e medida
+     numa copia invisivel do proprio bloco — mesma largura, mesma tipografia,
+     mesmo titulo montado letra a letra (letra em caixa inline-block quebra
+     linha em lugar diferente de texto corrido, entao medir com texto corrido
+     erraria a conta). */
+  var sonda = null, sFam = null, sTit = null, sDesc = null, largura = 0;
+
+  function montaSonda(){
+    if (sonda || !elTexto) return;
+    sonda = elTexto.cloneNode(true);
+    sonda.className = "palco__texto palco__sonda";
+    sFam  = sonda.querySelector("[data-familia]");
+    sTit  = sonda.querySelector("[data-titulo]");
+    sDesc = sonda.querySelector("[data-desc]");
+    /* tira os data-* da copia: sao a etiqueta com que o script acha os
+       originais, e dois elementos com a mesma etiqueta e pedido de bug */
+    [sFam, sTit, sDesc].forEach(function(el, i){
+      if (el) el.removeAttribute(["data-familia","data-titulo","data-desc"][i]);
+    });
+    palco.appendChild(sonda);
+  }
+
+  function mede(fam, tit, des){
+    if (!elTexto) return 0;
+    montaSonda();
+    if (!sonda) return 0;
+    if (sFam)  sFam.textContent  = fam;
+    if (sDesc) sDesc.textContent = des;
+    if (sTit)  monta(sTit, tit, true);
+    largura = palco.clientWidth;
+    /* arredonda PRA CIMA: a altura real e fracionaria, e um pixel a menos
+       deixaria a ultima linha da descricao pingando pra fora da caixa */
+    return Math.ceil(sonda.getBoundingClientRect().height);
+  }
+
+  function aplica(h, direto){
+    if (!elTexto || !h) return;
+    if (direto) {
+      elTexto.style.transition = "none";
+      elTexto.style.height = h + "px";
+      void elTexto.offsetWidth;   /* fecha o quadro sem transicao */
+      elTexto.style.transition = "";
+    } else {
+      elTexto.style.height = h + "px";
+    }
   }
 
   function texto(li, sel){
@@ -1891,9 +2025,11 @@ h3{font-size:1.15rem}
     if (elDesc) elDesc.textContent = des;
   }
 
-  function escreve(txt, direto){
-    elTit.classList.remove("palco__titulo--dentro");
-    elTit.textContent = "";
+  /* monta o titulo letra a letra dentro de QUALQUER elemento — o do palco ou o
+     da sonda. A sonda so usa isso pra medir; quem anima e o do palco. */
+  function monta(el, txt, direto){
+    el.classList.remove("palco__titulo--dentro");
+    el.textContent = "";
     var d = 0, partes = txt.split(" ");
     partes.forEach(function(pal, wi){
       var w = document.createElement("span");
@@ -1905,15 +2041,17 @@ h3{font-size:1.15rem}
         d++;
         w.appendChild(s);
       });
-      elTit.appendChild(w);
-      if (wi < partes.length - 1) elTit.appendChild(document.createTextNode(" "));
+      el.appendChild(w);
+      if (wi < partes.length - 1) el.appendChild(document.createTextNode(" "));
     });
     /* forca o navegador a calcular o estado inicial das letras recem-criadas.
        Sem esta leitura, elas nascem e ganham a classe no mesmo quadro — e ai
        nao ha "de onde" pra transicao sair, e o titulo simplesmente aparece. */
-    void elTit.offsetWidth;
-    elTit.classList.add("palco__titulo--dentro");
+    void el.offsetWidth;
+    el.classList.add("palco__titulo--dentro");
   }
+
+  function escreve(txt, direto){ monta(elTit, txt, direto); }
 
   /* ================= a lista, que e um CICLO =================
      ⚠️ A LISTA NAO TEM COMECO NEM FIM. Pedido do usuario em 20/08/2026: ao
@@ -2075,6 +2213,16 @@ h3{font-size:1.15rem}
   /* nasce centrado na copia do meio: e de la que o ciclo anda pros dois lados */
   trilho.scrollLeft = posDe(grupos[0][1]);
 
+  /* a altura do primeiro tratamento e escrita ja na entrada, e sem transicao.
+     Sem esse passo, o bloco comeca em `height:auto` — e altura automatica nao
+     interpola: a primeira troca daria um pulo em vez de deslizar. */
+  eco = {
+    fam: itens[0].getAttribute("data-familia") || "",
+    tit: texto(itens[0], ".cat__nome"),
+    des: texto(itens[0], ".cat__desc")
+  };
+  aplica(mede(eco.fam, eco.tit, eco.des), true);
+
   var ant = palco.querySelector("[data-ant]"), prox = palco.querySelector("[data-prox]");
   if (ant)  ant.addEventListener("click",  function(){ paraRelogio(); vai(atual - 1); });
   if (prox) prox.addEventListener("click", function(){ paraRelogio(); vai(atual + 1); });
@@ -2106,7 +2254,15 @@ h3{font-size:1.15rem}
   var espera2 = null;
   window.addEventListener("resize", function(){
     clearTimeout(espera2);
-    espera2 = setTimeout(function(){ ajusta(); if (!indo) desenha(0, atual, atual); }, 150);
+    espera2 = setTimeout(function(){
+      ajusta();
+      if (!indo) desenha(0, atual, atual);
+      /* ⚠️ so remede se a LARGURA mudou. No celular, esconder a barra de
+         endereco dispara resize a cada rolagem — e remedir ali seria refazer
+         conta que nao mudou, porque o texto so quebra diferente se a largura
+         mudar. */
+      if (palco.clientWidth !== largura) aplica(mede(eco.fam, eco.tit, eco.des), true);
+    }, 150);
   });
 
   function libera(){ pronto = true; if (visivel && !indo) ligaRelogio(); }
