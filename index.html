@@ -702,6 +702,90 @@ h3{font-size:1.15rem}
 .galeria img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
 .galeria figure:hover img{transform:scale(1.04)}
 
+/* ====================== antes e depois ======================
+   Componente reaproveitavel — o original, com o cabecalho inteiro de
+   armadilhas e regras, vive em `templates/componentes/antes-depois.html`.
+   Mexeu aqui e a mudanca serve pros outros clientes? Leva pra la tambem.
+
+   ⚠️ O CONTROLE E UM <input type="range"> DE VERDADE, esticado e invisivel por
+   cima da foto. Parece rebuscado e e o contrario: de graca, sem uma linha de
+   JS, ele traz arrasto com dedo e mouse (com captura de ponteiro — nao "solta"
+   quando o cursor sai do quadro, que e o defeito classico das versoes feitas
+   na mao com mousedown/mousemove), teclado (setas, Home e End), foco visivel e
+   leitura por leitor de tela.
+
+   ⚠️ `touch-action:pan-y` no range, e nao e opcional: sem ele o dedo que
+   encosta na foto pra ROLAR A PAGINA arrasta a cortina e a pagina nao desce.
+   Mesma armadilha do palco do catalogo, mesma solucao.
+
+   ⚠️ SEM JS A SECAO CONTINUA HONESTA: `--p` nasce em 50% aqui no CSS, entao
+   aparece metade de cada foto com os dois selos no lugar. Nao e interativo,
+   mas nao e uma caixa quebrada. */
+.ads{display:grid;gap:clamp(1.2rem,3vw,2rem)}
+@media (min-width:820px){.ads--2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:1040px){.ads--3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.ad{margin:0}
+.ad__quadro{
+  --p:50%;
+  position:relative;overflow:hidden;border-radius:var(--raio);
+  aspect-ratio:4/3;background:var(--creme-esc);
+  box-shadow:var(--sombra);contain:paint;
+}
+.ad__img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block;user-select:none;-webkit-user-drag:none;
+}
+/* `calc(100% - var(--p))` porque o inset() mede o quanto se ESCONDE, e --p diz
+   quanto se MOSTRA. */
+.ad__corte{position:absolute;inset:0;clip-path:inset(0 calc(100% - var(--p)) 0 0)}
+.ad__linha{
+  position:absolute;top:0;bottom:0;left:var(--p);
+  width:2px;margin-left:-1px;background:#fff;
+  box-shadow:0 0 0 1px rgba(24,16,13,.22);
+  pointer-events:none;   /* quem recebe o toque e o range, embaixo */
+}
+.ad__alca{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:44px;height:44px;border-radius:50%;
+  background:#fff;color:var(--marrom-esc);
+  display:grid;place-items:center;
+  box-shadow:0 4px 14px rgba(54,39,34,.3);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.ad__alca svg{
+  width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+.ad__selo{
+  position:absolute;top:.7rem;
+  padding:.3rem .7rem;border-radius:999px;
+  background:rgba(24,16,13,.62);color:#fff;
+  font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  pointer-events:none;transition:opacity .2s ease;
+}
+.ad__selo--a{left:.7rem}
+.ad__selo--d{right:.7rem}
+.ad__range{
+  position:absolute;inset:0;width:100%;height:100%;margin:0;
+  opacity:0;cursor:ew-resize;
+  -webkit-appearance:none;appearance:none;background:transparent;
+  touch-action:pan-y;
+}
+.ad__range::-webkit-slider-thumb{-webkit-appearance:none;width:56px;height:100%}
+.ad__range::-moz-range-thumb{width:56px;height:100%;border:0;opacity:0}
+.ad__quadro:hover .ad__alca{transform:translate(-50%,-50%) scale(1.06)}
+.ad__range:active + .ad__linha .ad__alca{transform:translate(-50%,-50%) scale(1.12)}
+/* o range e invisivel, entao quem mostra o foco do teclado e a alca */
+.ad__range:focus-visible + .ad__linha .ad__alca{
+  box-shadow:0 0 0 3px #fff,0 0 0 6px var(--terra-esc);
+}
+.ad__legenda{margin-top:.85rem;font-size:.95rem;color:var(--texto-suave)}
+.ad__legenda b{display:block;font-weight:600;color:var(--marrom-esc)}
+.ad__aviso{
+  margin-top:clamp(1.2rem,3vw,1.8rem);
+  font-size:.82rem;color:var(--texto-suave);
+}
+
 /* ====================== avaliacoes ======================
    ⚠️ O FORMATO E O DA REALCE, MAS O PLACAR NAO E. La o placar carrega a
    pagina com "4,9 em 105 avaliacoes"; aqui sao 9 avaliacoes e a CONTAGEM
@@ -925,6 +1009,7 @@ h3{font-size:1.15rem}
     <nav class="menu">
       <a href="#comeco">Como funciona</a>
       <a href="#tratamentos">Tratamentos</a>
+      <a href="#resultados">Resultados</a>
       <a href="#profissional">Quem atende</a>
       <a href="#espaco">O espaço</a>
       <a href="#avaliacoes">Avaliações</a>
@@ -1250,19 +1335,109 @@ h3{font-size:1.15rem}
   </div>
 </section>
 
-<!-- ⚠️⚠️ AQUI ENTRA A SECAO DE ANTES E DEPOIS.
-     Decisao do usuario em 20/08/2026: antes e depois ENTRA no site.
-     A secao NAO foi montada ainda porque **nao ha nenhum par de foto na pasta
-     `Fotos e Imagens/`** — as fotos estao no Instagram dela e ainda nao foram
-     baixadas. O padrao do workspace proibe deixar marcador visivel na pagina,
-     entao a secao simplesmente nao existe em vez de existir vazia.
+<!-- ===== antes e depois =====
+     Montada em 20/08/2026, com os dois pares que o usuario separou (arquivos
+     8/9 e 10/11 da pasta). O lugar e proposital e ja estava reservado: a pessoa
+     acabou de ler o que da pra resolver, e a prova vem em seguida.
 
-     QUANDO AS FOTOS CHEGAREM, esta secao entra aqui, entre "tratamentos" e
-     "quem atende", e o lugar e proposital: a pessoa acabou de ler o que da pra
-     resolver, e a prova vem em seguida.
+     ⚠️ AS FOTOS SAO O PAR ORIGINAL, SEPARADO — nao a montagem. Isso importa:
+     recortar uma montagem em duas da dois quadros que nao se alinham, e o
+     rosto pula quando a cortina passa. Aqui o alinhamento foi MEDIDO: uma
+     busca de deslocamento em miniatura achou o par (dx,dy) que minimiza a
+     diferenca entre as duas, e o corte de cada foto saiu de la
+     (olhos: dy=+20px na de depois; abdome: dx=-10, dy=-180). Por isso os
+     olhos e o umbigo ficam no mesmo lugar quando a linha passa por cima.
+     Trocar uma foto sem refazer essa conta desalinha o par.
 
-     PENDENCIA QUE VEM JUNTO: autorizacao de imagem de cada paciente. Vale em
-     qualquer conselho e na LGPD. Ver o bloco 2 do CLAUDE.md do projeto. -->
+     ⚠️ AS LEGENDAS DIZEM A AREA, NAO O PROCEDIMENTO. No par dos olhos ninguem
+     confirmou o que foi feito — parece linha de expressao tratada, mas
+     "parece" nao vai pro site de saude. No abdome o usuario disse que e a
+     drenagem, e e isso que esta escrito. Perguntar a ela e completar.
+
+     ⚠️ PENDENCIAS QUE CONTINUAM ABERTAS, e nenhuma e tecnica:
+       1. **Autorizacao de imagem** das duas pacientes. Vale em qualquer
+          conselho e na LGPD
+       2. **Confirmar que os dois pares sao dela**, em paciente dela. As fotos
+          nao vieram do Instagram como o resto da pasta
+       3. O par dos olhos foi fotografado com **luz muito diferente** entre as
+          duas (uma quente, uma fria). O resultado aparece — as linhas do canto
+          do olho sumiram — mas a diferenca de luz enfraquece a prova. Se ela
+          tiver um par tirado no mesmo ponto, troca
+     ⚠️ FALTA O TERCEIRO PAR, o de gluteo, que o usuario vai pedir a ela.
+     Entra como mais um <figure class="ad" data-ad>; a grade vira 3 trocando
+     `ads--2` por `ads--3`. -->
+<section class="secao" id="resultados">
+  <div class="env">
+    <div class="cabeca">
+      <span class="olho">Antes e depois</span>
+      <h2>O que muda, visto de perto</h2>
+      <p class="chamada">Arraste a linha para comparar. São fotos de pacientes da própria Larissa, publicadas com autorização.</p>
+    </div>
+
+    <div class="ads ads--2">
+
+      <!-- ⚠️ A FOTO DE BAIXO E A **DEPOIS**, e a cortada por cima e a **ANTES**.
+           Parece invertido e nao e: a camada cortada e a que aparece do lado
+           ESQUERDO, e antes-a-esquerda e o que os dois selos anunciam. Trocar a
+           ordem inverte a leitura sem inverter os selos — o erro passa
+           despercebido em revisao e mente pro visitante. -->
+      <figure class="ad" data-ad>
+        <div class="ad__quadro">
+          <img class="ad__img" src="assets/img/ad-olhos-depois.webp" width="1200" height="900"
+               loading="lazy" decoding="async"
+               alt="Depois: a região ao redor dos olhos, com as linhas do canto do olho suavizadas">
+          <div class="ad__corte">
+            <img class="ad__img" src="assets/img/ad-olhos-antes.webp" width="1200" height="900"
+                 loading="lazy" decoding="async"
+                 alt="Antes: a região ao redor dos olhos, com linhas finas marcadas no canto">
+          </div>
+          <span class="ad__selo ad__selo--d" data-selo-d>Depois</span>
+          <span class="ad__selo ad__selo--a" data-selo-a>Antes</span>
+          <div class="ad__linha" aria-hidden="true">
+            <span class="ad__alca">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6 4 12l5 6M15 6l5 6-5 6"/></svg>
+            </span>
+          </div>
+          <input class="ad__range" type="range" min="0" max="100" step="0.1" value="50"
+                 aria-label="Comparar antes e depois da área dos olhos — arraste, ou use as setas do teclado">
+        </div>
+        <figcaption class="ad__legenda">
+          <b>Área dos olhos</b>Linhas de expressão no canto dos olhos.
+        </figcaption>
+      </figure>
+
+      <figure class="ad" data-ad>
+        <div class="ad__quadro">
+          <img class="ad__img" src="assets/img/ad-abdome-depois.webp" width="1200" height="900"
+               loading="lazy" decoding="async"
+               alt="Depois: o abdome ao final da sessão de drenagem linfática">
+          <div class="ad__corte">
+            <img class="ad__img" src="assets/img/ad-abdome-antes.webp" width="1200" height="900"
+                 loading="lazy" decoding="async"
+                 alt="Antes: o abdome no início da sessão de drenagem linfática">
+          </div>
+          <span class="ad__selo ad__selo--d" data-selo-d>Depois</span>
+          <span class="ad__selo ad__selo--a" data-selo-a>Antes</span>
+          <div class="ad__linha" aria-hidden="true">
+            <span class="ad__alca">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6 4 12l5 6M15 6l5 6-5 6"/></svg>
+            </span>
+          </div>
+          <input class="ad__range" type="range" min="0" max="100" step="0.1" value="50"
+                 aria-label="Comparar antes e depois do abdome — arraste, ou use as setas do teclado">
+        </div>
+        <figcaption class="ad__legenda">
+          <b>Abdome</b>Drenagem linfática, método Renata França.
+        </figcaption>
+      </figure>
+
+    </div>
+
+    <!-- ⚠️ NAO APAGAR. Publicidade em saude com foto de resultado precisa dizer
+         isto, e dizer perto da foto. -->
+    <p class="ad__aviso">Resultados variam de pessoa para pessoa. As fotos são de pacientes reais e não representam promessa de resultado.</p>
+  </div>
+</section>
 
 <!-- ===== quem atende ===== -->
 <section class="secao secao--creme" id="profissional">
@@ -2293,6 +2468,67 @@ h3{font-size:1.15rem}
   } else {
     visivel = true; prepara(); ligaRelogio();
   }
+})();
+</script>
+
+<!-- ====================================================================
+     TERCEIRO SCRIPT — a cortina do antes e depois.
+     Doze linhas uteis, e todas de escrita: o range faz o trabalho de captura
+     de gesto, teclado e acessibilidade sozinho (ver o comentario no CSS). O
+     script so copia o valor dele pra dentro da variavel `--p` e apaga o selo
+     que a cortina cobriu.
+     ==================================================================== -->
+<script>
+(function(){
+  "use strict";
+  var pares = document.querySelectorAll("[data-ad]");
+  if (!pares.length) return;
+
+  var mq = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+  var semMovimento = !!(mq && mq.matches);
+
+  Array.prototype.forEach.call(pares, function(ad){
+    var quadro = ad.querySelector(".ad__quadro");
+    var range  = ad.querySelector(".ad__range");
+    var selA   = ad.querySelector("[data-selo-a]");
+    var selD   = ad.querySelector("[data-selo-d]");
+    if (!quadro || !range) return;
+
+    function pinta(v){
+      quadro.style.setProperty("--p", v + "%");
+      /* os selos apagam quando a cortina chega neles: os dois acesos em cima
+         da mesma foto invertem a leitura */
+      if (selA) selA.style.opacity = v < 16 ? 0 : 1;
+      if (selD) selD.style.opacity = v > 84 ? 0 : 1;
+    }
+    range.addEventListener("input", function(){ pinta(range.value); });
+    pinta(range.value);
+
+    /* O empurraozinho: na primeira vez que o par aparece na tela, a cortina
+       anda sozinha e volta. Sem isso muita gente le como foto parada e nunca
+       descobre que da pra arrastar. Uma vez por par, e nao roda pra quem pediu
+       menos movimento. */
+    if (semMovimento || !("IntersectionObserver" in window)) return;
+    var obs = new IntersectionObserver(function(itens){
+      itens.forEach(function(e){
+        if (!e.isIntersecting) return;
+        obs.disconnect();
+        var ini = null, DUR = 1500;
+        requestAnimationFrame(function passo(t){
+          if (!ini) ini = t;
+          var p = Math.min((t - ini) / DUR, 1);
+          /* sai de 50, vai a 66, volta a 34 e assenta em 50 — a amplitude cai
+             com (1-p), entao o fim e parado, sem tranco */
+          var v = 50 + Math.sin(p * Math.PI * 2) * 16 * (1 - p);
+          range.value = v;
+          pinta(v);
+          if (p < 1) requestAnimationFrame(passo);
+          else { range.value = 50; pinta(50); }
+        });
+      });
+    }, { threshold: 0.45 });
+    obs.observe(quadro);
+  });
 })();
 </script>
 
